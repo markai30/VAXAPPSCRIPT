@@ -4,10 +4,10 @@
 
 function getManifest() {
     return JSON.stringify({
-        "id": "phimchillhay",          
+        "id": "phimchill",          
         "name": "Phim Chill",
         "description": "Phim online",
-        "version": "1.1",             
+        "version": "1.0",             
         "baseUrl": "https://phimchillhdc.im",
         "iconUrl": "https://phimchillhdc.im/favicon.ico", 
         "isEnabled": true,
@@ -93,8 +93,9 @@ function parseListResponse(html) {
             if (!hrefMatch) continue; 
 
             // Giữ nguyên logic bọc link qua Google Script của bạn
+            //https://script.google.com/macros/s/AKfycbz1GH1hnsRICOVZ4Tiwo-Oqt_fQwWWX5Nedgt7hDYgu1yowGvVigeVrk8vrc6vHHcdo/exec
             var rawUrl = hrefMatch[1].trim();
-            var id = rawUrl.indexOf('http') === 0 ? rawUrl : "https://phimchillhdc.im/" + rawUrl;
+            var id = "https://script.google.com/macros/s/AKfycbz1GH1hnsRICOVZ4Tiwo-Oqt_fQwWWX5Nedgt7hDYgu1yowGvVigeVrk8vrc6vHHcdo/exec?url=" + rawUrl;
             
             var title = "";
             var altMatch = block.match(/title="([^"]+)"/i);
