@@ -3,12 +3,11 @@
 // =============================================================================
 
 function getManifest() {
-	print("--- TEST LOG ---");
     return JSON.stringify({
         "id": "rophim",          
         "name": "RophimFake",
         "description": "Nguồn xem phim PhimVN2Y ổn định",
-        "version": "1.1",             
+        "version": "1.2",             
         "baseUrl": "https://phimvn2y.com",
         "iconUrl": "https://raw.githubusercontent.com/youngbi/repo/main/plugins/kkphim.png", 
         "isEnabled": true,
@@ -190,11 +189,11 @@ function parseMovieDetail(html) {
 							if (numberRegex.test(epSlug)) {
    						 	epSlug = "tap-" + epSlug;
 							}
+							epName = epName.replace("Tập Tập","Tập");
                             episodes.push({
                                 "id": chapterPageUrl,  // Gán link trang tập vào id để hệ thống Core tải mã nguồn trang đó
                                 "slug": epSlug,
-                                "name": epName,
-                                "url": chapterPageUrl
+                                "name": epName
                             });
                         }
                     }
