@@ -7,12 +7,12 @@ function getManifest() {
         "id": "phimchill",          
         "name": "Phim Chill",
         "description": "Phim online",
-        "version": "1.4",             
+        "version": "1.6",             
         "baseUrl": "https://phimchillhdc.im",
         "iconUrl": "https://phimchillhdc.im/favicon.ico", 
         "isEnabled": true,
         "type": "VIDEO",
-        "playerType": "embed"
+        "playerType": "embedtoexoplay"
     });
 }
 
