@@ -7,12 +7,12 @@ function getManifest() {
         "id": "phimchill",          
         "name": "Phim Chill",
         "description": "Phim online",
-        "version": "1.4",             
+        "version": "1.0",             
         "baseUrl": "https://phimchillhdc.im",
         "iconUrl": "https://phimchillhdc.im/favicon.ico", 
         "isEnabled": true,
         "type": "VIDEO",
-        "playerType": "exoplayer"
+        "playerType": "auto"
     });
 }
 
@@ -226,7 +226,7 @@ function parseMovieDetail(html) {
     }
 	
 	var streamUrl = "";
-    var rmatch = html.match(/data-link="([^"]+\.m3u8)"/i);
+    var rmatch = html.match(/chooseStreamingServer[\s\S]*?data-link="([\s\S]*?)"/i);
    if (rmatch && rmatch[1]) { streamUrl = rmatch[1]; }
 	
     return JSON.stringify({
@@ -267,7 +267,7 @@ if (document.readyState === 'loading') {
 }
 `;
 		var streamUrl = "";
-        var rmatch = html.match(/data-link="([^"]+\.m3u8)"/i);
+        var rmatch = html.match(/chooseStreamingServer[\s\S]*?data-link="([\s\S]*?)"/i);
    	    if (rmatch && rmatch[1]) { streamUrl = rmatch[1]; }
    
         return JSON.stringify({
