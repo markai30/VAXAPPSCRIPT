@@ -7,9 +7,9 @@ function getManifest() {
         "id": "rophim",          
         "name": "RophimFake",
         "description": "Nguồn xem phim PhimVN2Y ổn định",
-        "version": "1.2",             
+        "version": "1.3",             
         "baseUrl": "https://phimvn2y.com",
-        "iconUrl": "https://raw.githubusercontent.com/youngbi/repo/main/plugins/kkphim.png", 
+        "iconUrl": "https://phimvn2y.com/wp-content/themes/rophim-2/assets/images/logo.svg", 
         "isEnabled": true,
         "type": "MOVIE"
     });
@@ -21,9 +21,9 @@ function getHomeSections() {
         { "slug": "phim-bo", "title": "Phim Bộ Mới", "type": "Horizontal" },
         { "slug": "phim-18", "title": "Phim 18+", "type": "Horizontal" },
         { "slug": "phim-hai", "title": "Phim Hài", "type": "Horizontal" },
-        { "slug": "hoat-hinh", "title": "Phim Hoạt Hình", "type": "Horizontal" },
-        { "slug": "hanh-dong", "title": "Phim Hành Động", "type": "Horizontal" },
-        { "slug": "kinh-di", "title": "Phim Kinh Dị", "type": "Grid" }
+        { "slug": "hoat-hinh", "title": "Hoạt Hình", "type": "Horizontal" },
+        { "slug": "hanh-dong", "title": "Hành Động", "type": "Horizontal" },
+        { "slug": "kinh-di", "title": "Kinh Dị", "type": "Grid" }
     ]);
 }
 
@@ -32,10 +32,10 @@ function getPrimaryCategories() {
         { "name": "Hành Động", "slug": "hanh-dong" },
         { "name": "Kinh Dị", "slug": "kinh-di" },
         { "slug": "phim-18", "name": "Phim 18+"},
-        { "slug": "phim-hai", "name": "Phim Hài"},
-        { "slug": "chien-tranh", "name": "Phim Chiến Tranh"},
-        { "slug": "hoat-hinh", "name": "Phim Hoạt Hình"},
-        { "slug": "vien-tuong", "name": "Phim Viễn Tưởng"}
+        { "slug": "phim-hai", "name": "Hài Hước"},
+        { "slug": "chien-tranh", "name": "Chiến Tranh"},
+        { "slug": "hoat-hinh", "name": "Hoạt Hình"},
+        { "slug": "vien-tuong", "name": "Viễn Tưởng"}
     ]);
 }
 
@@ -229,9 +229,19 @@ function parseMovieDetail(html) {
 
         return JSON.stringify({ "id": "error-object", "title": "Lỗi khởi tạo Object dữ liệu phim", "servers": [] });
 
-    } catch (error) {
-        return JSON.stringify({ "id": "error", "title": "Lỗi Thực Thi Hệ Thống: " + error.message, "servers": [] });
-    }
+    }  catch (error) {
+    return JSON.stringify({ 
+        "id": "error-" + Date.now(), 
+        "title": "Lỗi: " + error.message, 
+        "posterUrl": "", // BỔ SUNG TRƯỜNG NÀY ĐỂ TRÁNH LỖI MISING FIELD
+        "backdropUrl": "",
+        "description": "Không thể tải thông tin phim",
+        "year": "2026",
+        "rating": 0,
+        "quality": "SD",
+        "servers": [] 
+    });
+	}
 }
 
 /**
