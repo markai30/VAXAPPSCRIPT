@@ -5,15 +5,8 @@
             "id": "phimchill",
             "name": "Phim Chill",
             "version": "1.0",
-            "scriptUrl": "ttps://raw.githubusercontent.com/markai30/VAXAPPSCRIPT/main/Plugins/phimchill_plugin.js",
+            "scriptUrl": "https://raw.githubusercontent.com/markai30/VAXAPPSCRIPT/main/Plugins/phimchill_plugin.js",
             "iconUrl": "https://phimchillhdc.im/favicon.ico"
-        },
-        {
-            "id": "ophim",
-            "name": "OPhim",
-            "version": "1.0.4",
-            "scriptUrl": "https://raw.githubusercontent.com/youngbi/repo/main/plugins/ophim_plugin.js",
-            "iconUrl": "https://raw.githubusercontent.com/youngbi/repo/main/plugins/ophim.ico"
         },
     {
             "id": "ophim",
