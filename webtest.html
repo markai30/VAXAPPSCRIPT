@@ -4,7 +4,7 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<title>JavaScript &amp; HTML Interactive Lab (Direct Extract &amp; Full Width Float)</title>
+		<title>JavaScript &amp; HTML Interactive Lab (Optimized Layout)</title>
 		<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 		<style>
 			* {
@@ -20,16 +20,15 @@
 			            display: flex;
 			            flex-direction: column;
 			            min-height: 100vh;
+			            gap: 15px;
 			        }
 			        h2 {
-			            margin-bottom: 15px;
 			            font-size: 20px;
 			            color: #fff;
 			        }
 			        .url-bar {
 			            display: flex;
 			            gap: 10px;
-			            margin-bottom: 15px;
 			            background: #1e1e1e;
 			            padding: 10px;
 			            border-radius: 6px;
@@ -59,13 +58,13 @@
 			        .btn-secondary:hover { background-color: #555; }
 			        .btn-danger { background-color: #e74c3c; color: white; }
 			
-			        .main-layout {
+			        /* LAYOUT HÀNG TRÊN: CHỨA JS CODE VÀ CONSOLE OUTPUT SÁT NHAU */
+			        .top-layout {
 			            display: flex;
 			            gap: 15px;
-			            margin-bottom: 15px;
 			        }
 			        @media (max-width: 768px) {
-			            .main-layout { flex-direction: column; }
+			            .top-layout { flex-direction: column; }
 			        }
 			        .panel {
 			            flex: 1;
@@ -83,7 +82,7 @@
 			        }
 			        textarea {
 			            width: 100%;
-			            height: 250px;
+			            height: 320px;
 			            resize: vertical;
 			            padding: 10px;
 			            font-family: 'Courier New', Courier, monospace;
@@ -94,11 +93,21 @@
 			            color: #fff;
 			        }
 			
+			        /* LAYOUT HÀNG DƯỚI: FULL WIDTH CHO HTML SOURCE */
+			        .bottom-layout {
+			            display: flex;
+			            flex-direction: column;
+			            gap: 15px;
+			        }
+			        .bottom-layout textarea {
+			            height: 220px; /* Chiều cao vừa vặn cho vùng HTML phía dưới */
+			        }
+			
 			        /* KHUNG HIỂN THỊ CODE CHUẨN ĐẦY ĐỦ CUỘN DỌC NGANG */
 			        .code-display-wrapper {
-			            width: 700px;
-			            height: 250px;
-			            max-height: 250px;
+			            width: 100%;
+			            height: 220px;
+			            max-height: 220px;
 			            overflow: auto !important;
 			            padding: 10px;
 			            font-family: 'Courier New', Courier, monospace;
@@ -107,7 +116,7 @@
 			            border-radius: 4px;
 			            background-color: #151515;
 			            color: #abb2bf;
-			            white-space: pre-wrap !important;
+			            white-space: pre !important;
 			            word-wrap: normal !important;
 			            word-break: keep-all !important;
 			            line-height: 1.5;
@@ -136,13 +145,14 @@
 			            background-color: #2a2a2a;
 			            color: #fff;
 			            border-radius: 4px;
-			            min-width: 180px;
+			            min-width: 150px;
 			        }
 			
 			        #panel-extracted { display: none; }
 			
 			        /* --- SYSTEM TABS --- */
 			        .tab-container {
+			            flex: 1;
 			            background: #1a1a1a;
 			            border: 1px solid #333;
 			            border-radius: 6px;
@@ -174,7 +184,7 @@
 			        }
 			        .tab-content {
 			            display: none;
-			            height: 420px;
+			            height: 382px; /* Đồng bộ chiều cao với khung panel JS kế bên */
 			            box-sizing: border-box;
 			        }
 			        .tab-content.active {
@@ -187,6 +197,10 @@
 			            background: #000000;
 			            padding: 15px;
 			            height: 100%;
+			            display: flex;
+			            flex-direction: column;
+			            border-bottom-left-radius: 5px;
+			            border-bottom-right-radius: 5px;
 			        }
 			        .output-header {
 			            display: flex;
@@ -210,8 +224,8 @@
 			            line-height: 1.5;
 			            white-space: pre;
 			        }
-			        .log-item { margin-bottom: 6px; color: #ffffff; }
-			        .log-item.log-error { color: #ff6b6b; background: rgba(255,107,107,0.1); padding: 2px 5px; border-radius: 3px; }
+			        .log-item { margin-bottom: 6px; color: #ffffff; padding: 2px 5px; }
+			        .log-item.log-error { color: #ff6b6b; background: rgba(255,107,107,0.1); border-radius: 3px; }
 			        .log-item.log-info { color: #5bc0de; }
 			        .log-item.log-return { color: #f1c40f; font-weight: bold; }
 			
@@ -245,23 +259,24 @@
 			        /* --- CHẾ ĐỘ TOÀN MÀN HÌNH CHO CONSOLE --- */
 			        body.fullscreen-mode h2,
 			        body.fullscreen-mode .url-bar,
-			        body.fullscreen-mode .main-layout,
+			        body.fullscreen-mode .top-layout,
+			        body.fullscreen-mode .bottom-layout,
 			        body.fullscreen-mode .tab-headers { display: none !important; }
 			        body.fullscreen-mode #tab-console-content {
 			            position: fixed !important; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9998;
 			        }
 			
-			        /* --- CHẾ ĐỘ FULLSCREEN CHO INSPECTOR (WEBVIEW TOÀN MÀN HÌNH + KHUNG EXTRACT FULL WIDTH SÁT ĐÁY) --- */
+			        /* --- CHẾ ĐỘ FULLSCREEN CHO INSPECTOR --- */
 			        body.inspect-fullscreen-mode h2,
 			        body.inspect-fullscreen-mode .url-bar,
 			        body.inspect-fullscreen-mode #panel-javascript,
-			        body.inspect-fullscreen-mode .panel:first-child,
+			        body.inspect-fullscreen-mode .top-layout .panel:first-child,
+			        body.inspect-fullscreen-mode .bottom-layout,
 			        body.inspect-fullscreen-mode .tab-headers { display: none !important; }
 			
-			        body.inspect-fullscreen-mode .main-layout { margin-bottom: 0; gap: 0; }
+			        body.inspect-fullscreen-mode .top-layout { margin-bottom: 0; gap: 0; }
 			        body.inspect-fullscreen-mode .tab-container { border: none !important; }
 			
-			        /* Đưa khu vực webview lên full màn hình nhưng trừ ra 180px bên dưới để chừa chỗ cho thanh code */
 			        body.inspect-fullscreen-mode #tab-inspect-content {
 			            position: fixed !important;
 			            top: 0; left: 0;
@@ -270,19 +285,18 @@
 			            z-index: 9990;
 			        }
 			
-			        /* Ô TRÍCH XUẤT CHUYỂN THÀNH KHUNG POPUP FULL CHIỀU NGANG SÁT ĐÁY MÀN HÌNH */
 			        body.inspect-fullscreen-mode #panel-extracted {
 			            display: flex !important;
 			            position: fixed !important;
 			            bottom: 0 !important;
 			            left: 0 !important;
 			            width: 100vw !important;
-			            height: 180px !important; /* Chiều cao ngắn vừa phải để không chiếm quá nhiều chỗ */
+			            height: 180px !important;
 			            z-index: 9999;
 			            background: rgba(20, 20, 20, 0.98);
 			            border: none;
 			            border-top: 3px solid #3498db;
-			            border-radius: 0px; /* Bỏ bo góc vì đã full màn */
+			            border-radius: 0px;
 			            padding: 10px 15px;
 			            box-shadow: 0px -5px 25px rgba(0,0,0,0.8);
 			        }
@@ -306,16 +320,42 @@
 	</head>
 
 	<body>
-		<h2>JavaScript &amp; HTML Lab 1.9</h2>
 		<div class="url-bar"> <input type="text" id="urlInput" value="https://greenxh.today/categories/vietnamese" placeholder="Nhập đường dẫn website..."> <button class="btn btn-primary" id="btnFetch">Tải Source HTML</button> </div>
 		
-		<div class="main-layout">
+		<div class="top-layout">
+			<div class="panel" id="panel-javascript">
+				<div class="panel-title">Mã JavaScript (Auto-Format JSON Return)</div> <textarea id="jsInput" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="// Viết hoặc dán mã JS..."></textarea> <div class="js-controls" id="jsControlsBlock"> <button class="btn btn-success" id="btnRunAll">Chạy toàn bộ JS</button> <select id="functionSelect"> <option value="">-- Chọn hàm cụ thể --</option> </select> <button class="btn btn-primary" id="btnRunFunc" disabled="">Chạy hàm</button> <button class="btn btn-secondary" id="btnClearConsoleBtn">Xóa Log</button> </div>
+			</div>
+
+			<div class="tab-container">
+				<div class="tab-headers">
+					<button class="tab-button active" data-tab="console">[ CONSOLE MODE ]</button>
+					<button class="tab-button" data-tab="inspect">[ INSPECT ELEMENT ]</button>
+				</div>
+				
+				<div id="tab-console-content" class="tab-content active">
+					<div class="output-panel">
+						<div class="output-header"> <span>CONSOLE OUTPUT (Mới ở trên)</span> <div class="header-actions"> <span class="action-link" style="color: #3498db;" id="btnToggleFullscreen">[Toàn màn hình]</span> <span class="action-link" style="color: #ff6b6b;" id="btnClearConsole">[Xóa]</span> </div>
+						</div>
+						<div class="output-log" id="consoleLog"></div>
+					</div>
+				</div>
+
+				<div id="tab-inspect-content" class="tab-content">
+					<div class="inspect-panel">
+						<iframe id="preview-iframe" sandbox="allow-same-origin"></iframe>
+						<div id="info-bar">
+							<span id="info-bar-text">CLICK CHUỘT PHẢI trực tiếp vào phần tử để trích xuất.</span>
+							<button class="btn btn-primary" style="padding: 4px 10px; font-size: 12px;" id="btnEnterInspectFullscreen">Fullscreen Inspect</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="bottom-layout">
 			<div class="panel">
 				<div class="panel-title">Mã nguồn HTML (Vùng Sandbox &amp; Inspector)</div> <textarea id="htmlInput" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="Mã nguồn HTML..."></textarea> </div>
-			
-			<div class="panel" id="panel-javascript">
-				<div class="panel-title">Mã JavaScript (Auto-Format JSON Return)</div> <textarea id="jsInput" autocapitalize="none" autocorrect="off" spellcheck="false" placeholder="// Viết hoặc dán mã JS..."></textarea> <div class="js-controls" id="jsControlsBlock"> <button class="btn btn-success" id="btnRunAll">Chạy toàn bộ JS</button> <select id="functionSelect"> <option value="">-- Chọn hàm cụ thể --</option> </select> <button class="btn btn-primary" id="btnRunFunc" disabled="">Chạy hàm đã chọn</button> <button class="btn btn-secondary" id="btnClearConsoleBtn">Xóa Console</button> </div>
-			</div>
 
 			<div class="panel" id="panel-extracted">
 				<div class="panel-title">
@@ -323,31 +363,6 @@
 					<button class="btn btn-danger" style="padding: 4px 12px; font-size: 12px;" id="btnExitInspectFullscreen">Thoát Fullscreen</button>
 				</div>
 				<div class="code-display-wrapper" id="extractedCodeOutput">Kết quả trích xuất dạng phân cấp sẽ xuất hiện ở đây...</div>
-			</div>
-		</div>
-
-		<div class="tab-container">
-			<div class="tab-headers">
-				<button class="tab-button active" data-tab="console">[ CONSOLE MODE ]</button>
-				<button class="tab-button" data-tab="inspect">[ INSPECT ELEMENT ]</button>
-			</div>
-			
-			<div id="tab-console-content" class="tab-content active">
-				<div class="output-panel">
-					<div class="output-header"> <span>CONSOLE OUTPUT</span> <div class="header-actions"> <span class="action-link" style="color: #3498db;" id="btnToggleFullscreen">[Toàn màn hình]</span> <span class="action-link" style="color: #ff6b6b;" id="btnClearConsole">[Xóa Console]</span> </div>
-					</div>
-					<div class="output-log" id="consoleLog"></div>
-				</div>
-			</div>
-
-			<div id="tab-inspect-content" class="tab-content">
-				<div class="inspect-panel">
-					<iframe id="preview-iframe" sandbox="allow-same-origin"></iframe>
-					<div id="info-bar">
-						<span id="info-bar-text">CLICK CHUỘT PHẢI trực tiếp vào phần tử để trích xuất ngay lập tức.</span>
-						<button class="btn btn-primary" style="padding: 4px 10px; font-size: 12px;" id="btnEnterInspectFullscreen">Fullscreen Inspect</button>
-					</div>
-				</div>
 			</div>
 		</div>
 
@@ -407,10 +422,8 @@
 			                if (tabId === 'console') {
 			                    if(!$('body').hasClass('inspect-fullscreen-mode')) {
 			                        $panelExtracted.hide();
-			                        $panelJavaScript.show();
 			                    }
 			                } else if (tabId === 'inspect') {
-			                    $panelJavaScript.hide();
 			                    $panelExtracted.show();
 			                }
 			            });
@@ -432,7 +445,6 @@
 			                return !hasBlockElement;
 			            }
 			
-			            // THUẬT TOÁN ĐỊNH DẠNG HIGHLIGHT DOM
 			            function parseDomToHighlightedHtml(node, depth = 0, isInlineContext = false) {
 			                let indent = isInlineContext ? "" : " ".repeat(depth * 4);
 			                if (node.nodeType === 8) return "";
@@ -482,7 +494,6 @@
 			                return "";
 			            }
 			
-			            // SỰ KIỆN LÀM VIỆC TRONG IFRAME
 			            $iframe.on('load', function() {
 			                let iframeDoc = $iframe.contents();
 			
@@ -495,15 +506,13 @@
 			                    $infoBarText.html(`Đang trỏ: <span style="color:#2ecc71; font-weight:bold">${tagName}${id}${className}</span>`);
 			                });
 			
-			                // NÂNG CẤP: CLICK CHUỘT PHẢI LÀ LẬP TỨC TRÍCH XUẤT LUÔN KHÔNG HIỆN MENU
 			                iframeDoc.on('contextmenu', '*', function(e) {
 			                    e.preventDefault();
 			                    e.stopPropagation();
 			                    
 			                    let tagName = this.tagName.toLowerCase();
-			                    $infoBarText.html(`<strong>Đã trích xuất trực tiếp:</strong> <code>&lt;${tagName}&gt;</code>`);
+			                    $infoBarText.html(`<strong>Đã trích xuất:</strong> <code>&lt;${tagName}&gt;</code>`);
 			
-			                    // Tiến hành phân tách và đẩy code vào ô kết quả ngay lập tức
 			                    let finalVisualHtml = parseDomToHighlightedHtml(this, 0, false);
 			                    finalVisualHtml = finalVisualHtml.replace(/\n+$/, '');
 			                    $extractedCodeOutput.html(finalVisualHtml);
@@ -511,23 +520,21 @@
 			                });
 			            });
 			
-			            // --- LOGIC FULLSCREEN CHO TAB INSPECT ---
+			            // INSPECT FULLSCREEN LOGIC
 			            $('#btnEnterInspectFullscreen').click(function() {
 			                $('body').addClass('inspect-fullscreen-mode');
-			                // Đưa ô chứa kết quả append trực tiếp ra ngoài body để làm thanh ghim đáy full màn hình
 			                $panelExtracted.appendTo('body').show();
 			            });
 			
 			            $('#btnExitInspectFullscreen').click(function() {
 			                $('body').removeClass('inspect-fullscreen-mode');
-			                // Trả ô trích xuất về lại vị trí phân bố ban đầu
-			                $('.main-layout').append($panelExtracted);
+			                $('.bottom-layout').append($panelExtracted);
 			                if ($('.tab-button[data-tab="console"]').hasClass('active')) {
 			                    $panelExtracted.hide();
 			                }
 			            });
 			
-			            // FULLSCREEN CHO CONSOLE MODE CŨ
+			            // CONSOLE FULLSCREEN LOGIC
 			            function toggleFullscreenLayout() {
 			                $('body').toggleClass('fullscreen-mode');
 			                if ($('body').hasClass('fullscreen-mode')) {
@@ -562,9 +569,15 @@
 			                        } catch (e) { formattedMessage = message; }
 			                    }
 			                }
+			                
 			                let headerPrefix = type === 'return' ? `👉 [Return] [${new Date().toLocaleTimeString()}]\n` : `[${new Date().toLocaleTimeString()}] `;
-			                $consoleLog.append(`<div class="log-item ${extraClass}">${headerPrefix}${formattedMessage}</div>`);
-			                $consoleLog.scrollTop($consoleLog[0].scrollHeight);
+			                
+			                let $logItem = $('<div>').addClass('log-item').addClass(extraClass);
+			                let $textContainer = $('<span>').text(headerPrefix + formattedMessage);
+			                $logItem.append($textContainer);
+			                
+			                $consoleLog.prepend($logItem);
+			                $consoleLog.scrollTop(0);
 			            }
 			
 			            const nativeLog = console.log;
@@ -650,6 +663,7 @@
 			                try {
 			                    let interceptorJs = `
 			                        (function($, jQuery){
+			                            var html = window.html;
 			                            console.info = function(msg) { window.customLogReturn(msg); };
 			                            ${executeCode}
 			                        })(function(selector, context){ 
