@@ -9,7 +9,7 @@ function getManifest() {
         "id": "newporn",          
         "name": "18porn",
         "description": "Nguồn xem phim XXX ổn định",
-        "version": "1.0",             
+        "version": "1.2",             
         "baseUrl": BaseURL,
         "iconUrl": "https://crimescenesolutions.co.za/wp-content/uploads/2026/04/phimhayok-io-fav.jpg", 
         "isEnabled": true,
@@ -23,14 +23,16 @@ function getHomeSections() {
   { slug: 'new/', title: 'Hàng Mới', type: 'Grid' }
  ]);
 }
-
+//"/search/" + encodeURIComponent(keyword);
 function getPrimaryCategories() {
  return JSON.stringify([
   { name: 'Vú Bự', slug: 'categories/big-tits/' },
   { name: 'Xinh Đẹp', slug: 'categories/beuatiful/' },
   { name: 'Châu Á', slug: 'categories/asian/' },
   { name: 'Chơi 3', slug: 'categories/threesome/' },
-  { name: 'Lỗ Nhị', slug: 'categories/anal/' }
+  { name: 'Lỗ Nhị', slug: 'categories/anal/' },
+  { name: 'Black', slug: '/search/black/' },
+  { name: 'Clip Hay', slug: 'best/' }
  ]);
 }
 
