@@ -2,6 +2,13 @@
     "version": 1,
     "plugins": [
         {
+            "id": "18porn",
+            "name": "18 Porn",
+            "version": "1.0",
+            "scriptUrl": "https://raw.githubusercontent.com/markai30/VAXAPPSCRIPT/main/Plugins/18porn_plugin.js",
+            "iconUrl": "https://www.18porn.sex/images/logo.png"
+        },
+        {
             "id": "phimchill",
             "name": "Phim Chill",
             "version": "1.0",
