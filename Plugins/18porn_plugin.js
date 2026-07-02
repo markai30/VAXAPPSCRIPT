@@ -9,7 +9,7 @@ var BaseURL = "https://www.18porn.sex";
 
 function getManifest() {
  return JSON.stringify({
-  "id": "18porn", 
+  "id": "newporn", 
   "name": "18Porn", 
   "version": "1.1", 
   "baseUrl": BaseURL, 
