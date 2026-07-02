@@ -8,7 +8,7 @@ function getManifest() {
  return JSON.stringify({
   "id": "newporn", 
   "name": "18 Porn", 
-  "version": "1.1", 
+  "version": "1.3", 
   "baseUrl": BaseURL18, 
   "iconUrl": BaseURL18 + "/images/logo.png", 
   "isEnabled": true, 
@@ -33,12 +33,10 @@ function getPrimaryCategories() {
  ]);
 }
 
-function getFilterConfig() {
+function getFilters() {
  return JSON.stringify({
-  sort: [
-   { name: 'Thời gian cập nhật', value: 'modified.time' },
-   { name: 'Năm phát hành', value: 'year' },
-   { name: 'Theo ID', value: '_id' }
+  "sort": [
+   { "name": "Mới nhất", "value": "newest" }
   ]
  });
 }
