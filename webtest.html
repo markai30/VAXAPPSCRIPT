@@ -19,16 +19,7 @@
 			            padding: 15px;
 			            display: flex;
 			            flex-direction: column;
-			            min-height: 100vh;⇝  if (rmatch && rmatch[1]) { lname = rmatch[1]; }
-
-
-<!DOCTYPE html><html lang="vi"> <head>  <meta charset="UTF-8">  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>JavaScript &amp; HTML Interactive Lab (Fixed Layout)</title>  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>  <style>   * {               box-sizing: border-box;               margin: 0;               padding: 0;               font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;           }           body {               background-color: #121212;               color: #e0e0e0;               padding: 15px;               display: flex;               flex-direction: column;               min-height: 100vh;               gap: 15px;           }           h2 {               font-size: 20px;               color: #fff;           }           .url-bar {
-
- 
- 
- 
-setTimeout(function() {
-
+			            min-height: 100vh;
 			            gap: 15px;
 			        }
 			        h2 {
@@ -905,7 +896,7 @@ if (typeof obj !== 'object') {
 }
 $('#btnClearConsole').click(clearConsoleLogs);
 
-				function logToConsole(message, type = 'log') {
+   function logToConsole(message, type = 'log') {
     let extraClass = '';
     if (type === 'error') extraClass = 'log-error';
     if (type === 'info') extraClass = 'log-info';
@@ -966,8 +957,8 @@ $('#btnClearConsole').click(clearConsoleLogs);
         });
     }, 250);
 }
-				
-				const nativeLog = console.log;
+				    
+    const nativeLog = console.log;
     const nativeError = console.error;
 
     function lockDownRedirects() {
@@ -1188,7 +1179,8 @@ setTimeout(function() {
 		});
 	}
 }, 100);
-		
+
+			
     $('#btnExtractMeta').on('click', function() {
         let htmlContent = $htmlInput.val();
         if (!htmlContent) {
