@@ -7,7 +7,7 @@ BaseJSON = "";
 
 function getManifest() {
     return JSON.stringify({
-        "id": "testvideo",          
+        "id": "testvideo2",          
         "name": "Test",
         "description": "Nguồn xem phim Online ổn định",
         "version": "1.5",             
