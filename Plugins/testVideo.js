@@ -19,12 +19,6 @@ function getManifest() {
     });
 }
 
-function log(msg) {
-    nativeLog("" + msg);
-    if (typeof nativeLog !== 'undefined') {
-        nativeLog("" + msg);
-    }
-}
 
 function getHomeSections() {
     return JSON.stringify([
@@ -84,9 +78,7 @@ function parseListResponse(html) {
         // Lưu trữ object đầu tiên trực tiếp vào BaseJSON toàn cục để các hàm sau dùng tiện lợi
         var parsed = JSON.parse(html);
         BaseJSON = Array.isArray(parsed) ? parsed[0] : parsed;
-        
         var $url = BaseJSON.url || "";
-        log("Tạo Menu và getlink:" + $url);
         var items = [];
         items.push({
             "id": $url,          
@@ -111,7 +103,6 @@ function parseSearchResponse(html) {
 function parseMovieDetail(html) {
     try {
         var id = BaseURL;
-        log("Tạo Chi Tiết và getlink:" + BaseURL);
         // Khai báo trước streamUrl chống lỗi Strict Mode khi eval thực thi
         var streamUrl = ""; 
         var rmatch = html.match(/id="streaming-sv"[^>]*?data-link="(https?:[^"]*)"/i);
@@ -145,7 +136,6 @@ function parseDetailResponse(html) {
         var parsed = JSON.parse(html);
         BaseJSON = Array.isArray(parsed) ? parsed[0] : parsed;
         var videoUrl = BaseJSON.link || "";
-        log("Vào trang player và link:" + videoUrl);
         var refUrl = BaseJSON.ref || "";
         var agent = BaseJSON.codeb || "Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36";
         var customjs = BaseJSON.codec || ""
