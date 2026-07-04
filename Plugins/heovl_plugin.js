@@ -7,33 +7,18 @@ function getManifest() {
     return JSON.stringify({
         "id": "heovl",
         "name": "Heovl",
-        "description": "Nguồn xem phim XXX ổn định",
-        "version": "1.2",
-        "baseUrl": BaseURL,
-        "iconUrl": BaseURL + "/resize/50/2024/05/09/3aecc32e86cf3a79a98ed9f567354ab1fdd5d5355ddefdbb24855553b519a396.png",
-        "isEnabled": true,
-        "type": "VIDEO",
-        "playerType": "embed"
-    });
-}
-// =============================================================================
-// VAAPP Plugin-Crophim Pro (Đồng bộ cấu trúc 100% theo chuẩn RophimFake)
-// Tên file bắt buộc khi lưu:s crophim_plugin.js
-// =============================================================================
-BaseURL = "https://heovl.im";
-function getManifest() {
-    return JSON.stringify({
-        "id": "heovl",
-        "name": "Heovl",
-        "description": "Nguồn xem phim XXX ổn định",
+        "description": "XXX Hay",
         "version": "1.0",
         "baseUrl": BaseURL,
-        "iconUrl": BaseURL + "/resize/50/2024/05/09/3aecc32e86cf3a79a98ed9f567354ab1fdd5d5355ddefdbb24855553b519a396.png",
+        "iconUrl": "https://static.cdnsolutions.media/xh-desktop/images/favicon/favicon-v2-256x256.ico",
         "isEnabled": true,
+        "isAdult": true,
         "type": "VIDEO",
         "playerType": "embed"
     });
 }
+
+
 
 // Hàm tách menu bằng list
 function buildMenu(listurl){
