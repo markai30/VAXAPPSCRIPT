@@ -8,7 +8,7 @@ function getManifest() {
         "id": "xhamster",          
         "name": "Xhamster",
         "description": "XXX Hay",
-        "version": "1.2",             
+        "version": "1.3",             
         "baseUrl": BASEURL,
         "iconUrl": "https://static.cdnsolutions.media/xh-desktop/images/favicon/favicon-v2-256x256.ico", 
         "isEnabled": true,
@@ -231,7 +231,7 @@ return JSON.stringify({
     }
 }
 function textJS(html,$url){
-    return var customJs = `
+    return customJs = `
 function initCustomVideoFix() {
     const style = document.createElement('style');
     var customcss = 'body { background: black; overflow: hidden; }';
