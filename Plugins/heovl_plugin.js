@@ -8,7 +8,7 @@ function getManifest() {
         "id": "heovl",
         "name": "Heovl",
         "description": "XXX Hay",
-        "version": "2.0",
+        "version": "1.8",
         "BASEURL": BASEURL,
         "iconUrl": "https://static.cdnsolutions.media/xh-desktop/images/favicon/favicon-v2-256x256.ico",
         "isEnabled": true,
@@ -265,7 +265,7 @@ function parseMovieDetail(html,ourl) {
         
         // 2. Kiểm tra xem có nút bấm server hay không bằng Regex MatchAll
         // Tìm tất cả các đoạn có data-source="..." trong class button tương ứng
-        var serverRegex = /class="[^"]*video-player__cdn-selector-button[^"]*"[^>]*data-source="([^"]+)"/gi;
+        var serverRegex = /data-source="([^"]+)"/gi;
         //var html = document.getElementsByTagName("html")[0].outerHTML;
         var serverMatches = html.match(serverRegex)
         
@@ -275,13 +275,14 @@ function parseMovieDetail(html,ourl) {
                 var sourcebutton = serverMatches[j]; // Lấy giá trị trong nhóm ngoặc đơn ([^"]+)
                 var sourceUrl = sourcebutton.match(/data-source=["']([\s\S]*?)["']/i);
                 if(sourceUrl && sourceUrl[1]){
+                    console.log(sourceUrl[1])
                     if (j === 0) { lurl = sourceUrl[1]; } // Server đầu tiên làm ID chính
-                    ldes += "\r\n" + sourceUrl;
+                   
                     episodes.push({
-                    id: sourceUrl[1],
-                    name: "Server " + (j + 1),
-                    slug: "tap-" + (j + 1)
-                });
+                        id: sourceUrl[1],
+                        name: "Server " + (j + 1),
+                        slug: "tap-" + (j + 1)
+                    });
                 }
 
             }
@@ -292,7 +293,7 @@ function parseMovieDetail(html,ourl) {
             
             if (iframeMatch && iframeMatch[1]) {
                 lurl = iframeMatch[1];
-                ldes += "\r\n" + sourceUrl;
+                
                 episodes.push({
                     id: lurl,
                     name: "Server 1",
@@ -309,9 +310,7 @@ function parseMovieDetail(html,ourl) {
     } catch (e) {
         console.error("Lỗi parse dữ liệu: ", e);
     }
-    
-    // Trả về kết quả (Dù lỗi hay không lỗi vẫn return đúng cấu trúc object mong muốn)
-    return JSON.stringify({
+    var $return = {
         id: lurl,
         title: lname,
         posterUrl: limg,
@@ -324,7 +323,11 @@ function parseMovieDetail(html,ourl) {
         duration: duration,
         casts: cast,
         director: direc
-    });
+    }
+    var $string = JSON.stringify($return);
+    $return.description = $return.description + "\r\n" + JSON.stringify($return);
+    // Trả về kết quả (Dù lỗi hay không lỗi vẫn return đúng cấu trúc object mong muốn)
+    return JSON.stringify($return);
 }
 //var html = document.getElementsByTagName("html")[0].outerHTML;
 //JSON.parse(parseMovieDetail(html,""))
