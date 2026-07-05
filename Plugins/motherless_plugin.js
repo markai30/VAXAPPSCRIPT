@@ -5,7 +5,7 @@ function getManifest() {
         "id": "motherless",
         "name": "Motherless",
         "description": "XXX Hay",
-        "version": "1.2",
+        "version": "1.4",
         "baseUrl": BASEURL,
         "iconUrl": "https://static.cdnsolutions.media/xh-desktop/images/favicon/favicon-v2-256x256.ico",
         "isEnabled": true,
@@ -285,7 +285,7 @@ function parseListResponse(html, baseUrl) {
     var base = baseUrl || BASEURL;
     try {
         var items = [];
-        var chunks = html.split('class="mobile-thumb-inner"');
+        var chunks = html.split(/class=["']mobile-thumb-inner["']/);
         
         // Vòng lặp chạy hết mảng để không sót item cuối
         for (var i = 1; i < chunks.length; i++) {
