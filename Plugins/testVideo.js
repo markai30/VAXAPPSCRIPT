@@ -11,7 +11,7 @@ function getManifest() {
         "id": "testvideo",          
         "name": "Test Embed",
         "description": "Nguồn xem phim Online ổn định",
-        "version": "1.4",             
+        "version": "1.11",             
         "baseUrl": BaseURL,
         "iconUrl": "https://crimescenesolutions.co.za/wp-content/uploads/2026/04/phimhayok-io-fav.jpg", 
         "isEnabled": true,
@@ -144,12 +144,14 @@ function parseDetailResponse(html,url) {
         if(BaseURL){
             joinnew += BaseURL;
         }
-        var allLink =  JSON.stringify(getAllLinks(html)  + joinnew );
+        
+        var allLink =  base64Encode(html);
         var customjs = BaseJSON.codec || "";
         customjs += `
-        function runScript(){
+        function runScript($title,$msg){
             var urlList = '${allLink}';
-            customAlert('${url}', urlList);
+            var decodehtml = decodeBase64ToHtml($urlList);
+            customAlert($msg + ':${url}', decodehtml);
         }
         function decodeBase64ToHtml(base64String) {
             const binaryString = atob(base64String);
@@ -198,6 +200,24 @@ function getAllLinks(html) {
   return matches.join('\n');
 }
 
+
+function base64Encode(str) {
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+    var encoded = '';
+    for (var i = 0; i < str.length; i += 3) {
+        var c1 = str.charCodeAt(i);
+        var c2 = i + 1 < str.length ? str.charCodeAt(i + 1) : NaN;
+        var c3 = i + 2 < str.length ? str.charCodeAt(i + 2) : NaN;
+        
+        var byte1 = c1 >> 2;
+        var byte2 = ((c1 & 3) << 4) | (isNaN(c2) ? 0 : c2 >> 4);
+        var byte3 = isNaN(c2) ? 64 : ((c2 & 15) << 2) | (isNaN(c3) ? 0 : c3 >> 6);
+        var byte4 = isNaN(c3) ? 64 : c3 & 63;
+        
+        encoded += chars.charAt(byte1) + chars.charAt(byte2) + chars.charAt(byte3) + chars.charAt(byte4);
+    }
+    return encoded;
+}
 
 function parseCategoriesResponse(html) { return "[]"; }
 function parseCountriesResponse(html) { return "[]"; }
