@@ -8,7 +8,7 @@ function getManifest() {
         "id": "heovl",
         "name": "Heovl",
         "description": "XXX Hay",
-        "version": "1.1",
+        "version": "1.5",
         "baseUrl": BaseURL,
         "iconUrl": "https://static.cdnsolutions.media/xh-desktop/images/favicon/favicon-v2-256x256.ico",
         "isEnabled": true,
@@ -246,7 +246,7 @@ function parseMovieDetail(html) {
         
         // 2. Kiểm tra xem có nút bấm server hay không bằng Regex MatchAll
         // Tìm tất cả các đoạn có data-source="..." trong class button tương ứng
-        var serverRegex = /class="[^"]*video-player__cdn-selector-button[^"]*"[^>]*data-source="([^"]+)"/gi;
+        var serverRegex = /class="[^"]*Tvideo-player__cdn-selector-button[^"]*"[^>]*data-source="([^"]+)"/gi;
         var serverMatches = [...html.matchAll(serverRegex)];
         
         if (serverMatches.length > 0) {
@@ -311,11 +311,12 @@ function parseDetailResponse(html, url) {
     try {
         var customJs = `
 // Script chạy cho server heovl
+
 function initCustomVideoFix() {
     const style = document.createElement('style');
     
     // Dùng dấu nháy đơn và nối chuỗi bằng dấu cộng để dễ nhìn, không bị trùng backtick
-    var customcss = 'body { background: black; overflow: hidden; }';
+    var customcss = 'body { background: black; overflow: hidden; }#comments,header,footer,.entry-actions,.entry-header,.entry-info,.entry-content,#related-posts,.entry-content + .mt-2 {display:none}body * {background: black;}';
     
     style.innerHTML = customcss; // ĐÃ SỬA: Xóa dấu nháy đơn thừa
     document.head.appendChild(style);
@@ -330,6 +331,7 @@ function initCustomVideoFix() {
             player.setVolume(100);
         }
     }
+    
     const checkAndClick = setInterval(() => {
         const skipButton = document.getElementById("skip-ad");
         
@@ -348,7 +350,6 @@ function initCustomVideoFix() {
         console.log("⏱️ Đã quá 20 giây, dừng tìm kiếm.");
     }, 20000);
     
-    
 }
 
 if (document.readyState === 'loading') {
@@ -362,8 +363,8 @@ if (document.readyState === 'loading') {
         return JSON.stringify({
             url: url,
             headers: {
-                "Referer": BaseURL,
-                "Origin": BaseURL,
+                "Referer": url,
+                "Origin": url,
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                 "Custom-Js": customJs.trim()
             }
