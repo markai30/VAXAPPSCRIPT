@@ -10,7 +10,7 @@ function getManifest() {
         "id": "testvideo",          
         "name": "Test Embed",
         "description": "Nguồn xem phim Online ổn định",
-        "version": "1.1",             
+        "version": "1.2",             
         "baseUrl": BaseURL,
         "iconUrl": "https://crimescenesolutions.co.za/wp-content/uploads/2026/04/phimhayok-io-fav.jpg", 
         "isEnabled": true,
@@ -139,12 +139,12 @@ function parseDetailResponse(html,url) {
         var refUrl = BaseJSON.ref || "";
         var agent = BaseJSON.codeb || "Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36";
         url = JSON.stringify(url);
-        var allLink =  "124242";
+        var allLink =  JSON.stringify(parsed);;
         var customjs = BaseJSON.codec || "";
         customjs += `
         function runScript(){
             var urlList = '${allLink}';
-            customAlert('${url}', textlist);
+            customAlert('${url}', urlList);
         }
         function decodeBase64ToHtml(base64String) {
             const binaryString = atob(base64String);
