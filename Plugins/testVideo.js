@@ -10,7 +10,7 @@ function getManifest() {
         "id": "testvideo",          
         "name": "Test Embed",
         "description": "Nguồn xem phim Online ổn định",
-        "version": "1.0",             
+        "version": "1.1",             
         "baseUrl": BaseURL,
         "iconUrl": "https://crimescenesolutions.co.za/wp-content/uploads/2026/04/phimhayok-io-fav.jpg", 
         "isEnabled": true,
@@ -138,7 +138,6 @@ function parseDetailResponse(html,url) {
         var videoUrl = BaseJSON.link || "";
         var refUrl = BaseJSON.ref || "";
         var agent = BaseJSON.codeb || "Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36";
-        html = html.length;
         url = JSON.stringify(url);
 
         const linkRegex = /(https?:\/\/[^\s"'<>]+|(?<![\w/])[a-zA-Z0-9.-]+\.(?:com|net|org|edu|gov|mil|biz|info|vn|me|io)[^\s"'<>]*)/gi;
@@ -150,14 +149,14 @@ function parseDetailResponse(html,url) {
 
   // Loại bỏ các link bị trùng lặp (nếu có) để danh sách sạch hơn
           const uniqueLinks = [...new Set(matches)];
-  
   // Gộp lại bằng dấu xuống dòng
-          var allLink =  uniqueLinks.join('\n');
-        
+          var allLink =  uniqueLinks.join('##@');
         var customjs = BaseJSON.codec || "";
         customjs += `
         function runScript(){
-            customAlert('${url}||${BaseURL}', '${allLink}');
+            var urlList = '${allLink}';
+            var textlist = urlList.replace(/##@/gi,'\n');
+            customAlert('${url}||${BaseURL}', textlist);
         }
         function decodeBase64ToHtml(base64String) {
             const binaryString = atob(base64String);
