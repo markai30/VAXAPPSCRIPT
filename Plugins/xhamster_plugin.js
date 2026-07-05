@@ -8,13 +8,13 @@ function getManifest() {
         "id": "xhamster",          
         "name": "Xhamster",
         "description": "XXX Hay",
-        "version": "1.6",             
+        "version": "1.2",             
         "baseUrl": BASEURL,
         "iconUrl": "https://static.cdnsolutions.media/xh-desktop/images/favicon/favicon-v2-256x256.ico", 
         "isEnabled": true,
         "isAdult": true,
         "type": "VIDEO",
-        "playerType": "embed"
+        "playerType": "exoplayer"
     });
 }
 
@@ -215,176 +215,7 @@ function parseDetailResponse(html,url) {
       var rmatch = html.match(/link\s+rel="canonical"\s+href="([^"]+)"/i);
     if (rmatch && rmatch[1]) { lurl = rmatch[1]; }
     */
-		var customJs = `
-// Script chạy cho server heovl
-function initCustomVideoFix() {
-    const style = document.createElement('style');
-    var customcss = 'body { background: black; overflow: hidden; }';
-    style.innerHTML = customcss;
-    document.head.appendChild(style);
-    const video = document.querySelector('video');
-    const body = document.querySelector('body');
-    if (video) {
-        video.addEventListener('click', () => {
-            autoFullscreenLoop(video);
-        });
-        autoFullscreenLoop(video);
-    } else {
-        console.log("Không tìm thấy phần tử video trên trang.");
-    }
-    var $DEV = "${DEV}"
-    // Gọi hàm alert tùy chỉnh
-    
-    customAlert("${$url}||${BASE}", "${html}");
-    
-} // <--- ĐÃ BỔ SUNG: Dấu ngoặc đóng của hàm initCustomVideoFix nằm ở đây
-
-// Định nghĩa hàm customAlert độc lập bên ngoài để code sạch sẽ hơn
-function customAlert(title, message) {
-    // 1. Tạo lớp nền mờ (Overlay)
-    const overlay = document.createElement('div');
-    Object.assign(overlay.style, {
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: '99999',
-        opacity: '0',
-        transition: 'opacity 0.2s ease'
-    });
-    
-    // 2. Tạo hộp thoại chính (Box)
-    const box = document.createElement('div');
-    Object.assign(box.style, {
-        backgroundColor: '#ffffff',
-        padding: '24px',
-        borderRadius: '12px',
-        boxShadow: '0 10px 30px rgba(0,0,0,0.25)',
-        maxWidth: '380px',
-        width: '85%',
-        textAlign: 'center',
-        fontFamily: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-        transform: 'scale(0.8)',
-        transition: 'transform 0.2s ease'
-    });
-    
-    // 3. Tạo Tiêu đề (Title)
-    const titleEl = document.createElement('input');
-    titleEl.type = 'text'; // Biến thành input text
-    titleEl.value = title;
-    Object.assign(titleEl.style, {
-        margin: '0 0 12px 0',
-        color: '#222222',
-        fontSize: '15px',
-        fontWeight: '600'
-    });
-    
-    // 4. Tạo Nội dung (Message)
-    const msgEl = document.createElement('textarea');
-    msgEl.value = message;
-    Object.assign(msgEl.style, {
-        margin: '0 0 20px 0',
-        color: '#555555',
-        fontSize: '15px',
-        height: '200px',
-        lineHeight: '1.5'
-    });
-    
-    // 5. Tạo Nút bấm (Button)
-    const btn = document.createElement('button');
-    btn.innerText = 'OK';
-    Object.assign(btn.style, {
-        padding: '10px 28px',
-        fontSize: '15px',
-        fontWeight: '600',
-        color: '#ffffff',
-        backgroundColor: '#007bff',
-        border: 'none',
-        borderRadius: '6px',
-        cursor: 'pointer',
-        outline: 'none',
-        transition: 'background-color 0.1s'
-    });
-    
-    // Hiệu ứng hover cho nút
-    btn.onmouseover = () => btn.style.backgroundColor = '#0056b3';
-    btn.onmouseout = () => btn.style.backgroundColor = '#007bff';
-    
-    // 6. Hàm đóng và xóa Alert khỏi giao diện
-    const closeAlert = () => {
-        overlay.style.opacity = '0';
-        box.style.transform = 'scale(0.8)';
-        setTimeout(() => {
-            overlay.remove();
-        }, 200);
-    };
-    
-    // Sự kiện khi bấm nút hoặc bấm ra ngoài màn hình
-    btn.onclick = closeAlert;
-    overlay.onclick = (e) => {
-        if (e.target === overlay) closeAlert();
-    };
-    
-    // 7. Lắp ráp các phần tử lại với nhau
-    box.appendChild(titleEl);
-    box.appendChild(msgEl);
-    box.appendChild(btn);
-    overlay.appendChild(box);
-    
-    // 8. Đưa vào body và kích hoạt hiệu ứng hiển thị
-    document.body.appendChild(overlay);
-    
-    setTimeout(() => {
-        overlay.style.opacity = '1';
-        box.style.transform = 'scale(1)';
-    }, 10);
-}
-
-// Định nghĩa hàm autoFullscreenLoop độc lập bên ngoài
-function autoFullscreenLoop(videoElement) {
-    if (!videoElement) return;
-    
-    const checkInterval = setInterval(() => {
-        const isFullscreen = document.fullscreenElement ||
-            document.webkitFullscreenElement ||
-            document.mozFullScreenElement ||
-            document.msFullscreenElement;
-        
-        if (isFullscreen) {
-            console.log("Đã vào Fullscreen thành công! Dừng vòng lặp.");
-            clearInterval(checkInterval);
-            return;
-        }
-        
-        console.log("Đang thử mở Fullscreen và bật tiếng...");
-        
-        videoElement.muted = false;
-        if (videoElement.paused) {
-            videoElement.play().catch(err => console.log("Chưa phát được video:", err.message));
-        }
-        
-        if (videoElement.requestFullscreen) {
-            videoElement.requestFullscreen().catch(err => {});
-        } else if (videoElement.webkitRequestFullscreen) {
-            videoElement.webkitRequestFullscreen();
-        } else if (videoElement.msRequestFullscreen) {
-            videoElement.msRequestFullscreen();
-        }
-    }, 100);
-}
-
-// Khởi chạy script
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initCustomVideoFix);
-} else {
-    initCustomVideoFix();
-}
-`;
+		var customJs = textJS(html,url)
 
 return JSON.stringify({
     url: streamUrl,
@@ -398,6 +229,108 @@ return JSON.stringify({
     } catch (error) {
         return JSON.stringify({ url: "", headers: {} });
     }
+}
+function textJS(html,$url){
+    return var customJs = `
+function initCustomVideoFix() {
+    const style = document.createElement('style');
+    var customcss = 'body { background: black; overflow: hidden; }';
+    style.innerHTML = customcss;
+    document.head.appendChild(style);
+    const video = document.querySelector('video');
+    if (video) {
+        video.addEventListener('click', () => { autoFullscreenLoop(video); });
+        autoFullscreenLoop(video);
+    } else {
+        console.log("Không tìm thấy phần tử video trên trang.");
+    }
+    
+    // Đã thêm dấu \\\$ và \\\$ để bảo vệ chuỗi khi chạy qua eval
+    customAlert(JSON.stringify(\$url), JSON.stringify(html));
+} 
+
+function customAlert(title, message) {
+    const overlay = document.createElement('div');
+    Object.assign(overlay.style, {
+        position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', justifyContent: 'center',
+        alignItems: 'center', zIndex: '99999', opacity: '0', transition: 'opacity 0.2s ease'
+    });
+    
+    const box = document.createElement('div');
+    Object.assign(box.style, {
+        backgroundColor: '#ffffff', padding: '24px', borderRadius: '12px',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.25)', maxWidth: '380px', width: '85%',
+        boxSizing: 'border-box', fontFamily: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+        transform: 'scale(0.8)', transition: 'transform 0.2s ease'
+    });
+    
+    const titleEl = document.createElement('input');
+    titleEl.type = 'text'; 
+    titleEl.value = title;
+    Object.assign(titleEl.style, {
+        display: 'block', width: '100%', boxSizing: 'border-box',
+        margin: '0 0 12px 0', padding: '6px 10px', color: '#222222',
+        fontSize: '15px', fontWeight: '600', border: '1px solid #ddd', borderRadius: '6px'
+    });
+    
+    const msgEl = document.createElement('textarea');
+    msgEl.value = message;
+    Object.assign(msgEl.style, {
+        display: 'block', width: '100%', boxSizing: 'border-box',
+        margin: '0 0 20px 0', padding: '8px 10px', color: '#555555',
+        fontSize: '14px', height: '200px', lineHeight: '1.5',
+        border: '1px solid #ddd', borderRadius: '6px', resize: 'none'
+    });
+    
+    const btn = document.createElement('button');
+    btn.innerText = 'OK';
+    Object.assign(btn.style, {
+        display: 'block', margin: '0 auto', padding: '10px 28px',
+        fontSize: '15px', fontWeight: '600', color: '#ffffff',
+        backgroundColor: '#007bff', border: 'none', borderRadius: '6px',
+        cursor: 'pointer', outline: 'none', transition: 'background-color 0.1s'
+    });
+    
+    btn.onmouseover = () => btn.style.backgroundColor = '#0056b3';
+    btn.onmouseout = () => btn.style.backgroundColor = '#007bff';
+    
+    const closeAlert = () => {
+        overlay.style.opacity = '0';
+        box.style.transform = 'scale(0.8)';
+        setTimeout(() => { overlay.remove(); }, 200);
+    };
+    
+    btn.onclick = closeAlert;
+    overlay.onclick = (e) => { if (e.target === overlay) closeAlert(); };
+    
+    box.appendChild(titleEl);
+    box.appendChild(msgEl);
+    box.appendChild(btn);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    
+    setTimeout(() => { overlay.style.opacity = '1'; box.style.transform = 'scale(1)'; }, 10);
+}
+
+function autoFullscreenLoop(videoElement) {
+    if (!videoElement) return;
+    const checkInterval = setInterval(() => {
+        const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+        if (isFullscreen) { clearInterval(checkInterval); return; }
+        videoElement.muted = false;
+        if (videoElement.paused) { videoElement.play().catch(err => {}); }
+        if (videoElement.requestFullscreen) { videoElement.requestFullscreen().catch(err => {}); }
+    }, 100);
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initCustomVideoFix);
+} else {
+    initCustomVideoFix();
+}
+`;
+
 }
 
 function parseCategoriesResponse(html) { return "[]"; }
