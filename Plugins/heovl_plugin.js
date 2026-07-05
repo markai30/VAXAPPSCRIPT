@@ -8,7 +8,7 @@ function getManifest() {
         "id": "heovl",
         "name": "Heovl",
         "description": "XXX Hay",
-        "version": "1.5",
+        "version": "1.6",
         "baseUrl": BaseURL,
         "iconUrl": "https://static.cdnsolutions.media/xh-desktop/images/favicon/favicon-v2-256x256.ico",
         "isEnabled": true,
@@ -246,35 +246,16 @@ function parseMovieDetail(html) {
         
         // 2. Kiểm tra xem có nút bấm server hay không bằng Regex MatchAll
         // Tìm tất cả các đoạn có data-source="..." trong class button tương ứng
-        var serverRegex = /class="[^"]*Tvideo-player__cdn-selector-button[^"]*"[^>]*data-source="([^"]+)"/gi;
-        var serverMatches = [...html.matchAll(serverRegex)];
+        var iframeRegex = /class="[^"]*video-player[^"]*"[\s\S]*?iframe\s+src="([^"]+)"/i;
+        var iframeMatch = html.match(iframeRegex);
         
-        if (serverMatches.length > 0) {
-            // Nếu tìm thấy các nút server
-            for (var j = 0; j < serverMatches.length; j++) {
-                var sourceUrl = serverMatches[j][1]; // Lấy giá trị trong nhóm ngoặc đơn ([^"]+)
-                
-                if (j === 0) { lurl = sourceUrl; } // Server đầu tiên làm ID chính
-                
-                episodes.push({
-                    id: sourceUrl,
-                    name: "Server " + (j + 1),
-                    slug: "tap-" + (j + 1)
-                });
-            }
-        } else {
-            // 3. Nếu không có nút thì tìm iframe
-            var iframeRegex = /class="[^"]*video-player[^"]*"[\s\S]*?iframe\s+src="([^"]+)"/i;
-            var iframeMatch = html.match(iframeRegex);
-            
-            if (iframeMatch && iframeMatch[1]) {
-                lurl = iframeMatch[1];
-                episodes.push({
-                    id: iframeMatch[1],
-                    name: "Server 1",
-                    slug: "tap-1"
-                });
-            }
+        if (iframeMatch && iframeMatch[1]) {
+            lurl = iframeMatch[1];
+            episodes.push({
+                id: iframeMatch[1],
+                name: "Server 1",
+                slug: "tap-1"
+            });
         }
         
         servers = [{
