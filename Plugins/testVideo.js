@@ -130,7 +130,7 @@ function parseMovieDetail(html) {
     }
 }
 
-function parseDetailResponse(html) {
+function parseDetailResponse(html,url) {
     try {
         // Đọc trực tiếp từ thuộc tính của BaseJSON đã lưu ở bước đầu tiên
         var parsed = JSON.parse(html);
