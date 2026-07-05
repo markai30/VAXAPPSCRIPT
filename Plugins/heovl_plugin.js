@@ -8,7 +8,7 @@ function getManifest() {
         "id": "heovl",
         "name": "Heovl",
         "description": "XXX Hay",
-        "version": "1.0",
+        "version": "1.5",
         "baseUrl": BaseURL,
         "iconUrl": "https://static.cdnsolutions.media/xh-desktop/images/favicon/favicon-v2-256x256.ico",
         "isEnabled": true,
@@ -156,58 +156,63 @@ function getUrlYears() { return ""; }
 function parseListResponse(html) {
     try {
         var items = [];
-        var regexList = new RegExp('<div class="module-item-pic"><a\\s+href="([^"]+)"\\s+title="([^"]+)"[\\s\\S]*?<img[^>]*data-src="([^"]+)"', 'g');
-        var matchList;
+        // Tách từng item phim để tránh regex chạy sai giữa các item
+        var chunks = html.split('class="videos__box-wrapper"');
         
-        while ((matchList = regexList.exec(html)) !== null) {
-          if(matchList[3]){
-            var cleanThumb = matchList[3].replace(/&amp;/g, '&'); 
-            items.push({
-                "id": matchList[1],          
-                "title": matchList[2].trim(), 
-                "posterUrl": cleanThumb,  
-                "backdropUrl": cleanThumb
-            });
-          }
-        }
-        
-        var totalPages = 1; 
-        var currentPage = 1; 
-
-        if (html && html.indexOf('id="page"') > -1) {
-            var pageSectionBox = html.match(new RegExp('<div id="page">([\\s\\S]*?)<\/div>', 'i'));
-            if (pageSectionBox && pageSectionBox[1]) {
-                var pageHtml = pageSectionBox[1];
-                var currentMatch = pageHtml.match(new RegExp('class="[^"]*page-current[^"]*">(\\d+)<', 'i'));
-                if (currentMatch) {
-                    currentPage = parseInt(currentMatch[1], 10);
-                }
-
-                var pageNumbers = [];
-                var pageRegex = new RegExp('>(\\d+)<\\/a>', 'g');
-                var pageMatch;
-                
-                while ((pageMatch = pageRegex.exec(pageHtml)) !== null) {
-                    pageNumbers.push(parseInt(pageMatch[1], 10));
-                }
-
-                if (pageNumbers.length > 0) {
-                    totalPages = Math.max.apply(Math, pageNumbers);
-                }
-                if (totalPages < currentPage) {
-                    totalPages = currentPage;
-                }
+        // Bắt đầu từ 1 vì phần tử 0 là phần html trước class đầu tiên
+        for (var i = 1; i < chunks.length; i++) {
+            var blockHtml = chunks[i];
+            
+            // Kiểm tra xem block này có chứa các thẻ cốt lõi của video không
+            if (!blockHtml.match(/img|href|video|src/i)) {
+                continue;
             }
+            
+            // 1. Lấy link phim (Sửa lỗi logic || thành &&)
+            var urlMatch = blockHtml.match(/a[\s\S]*?href="([^"]+)"/i);
+            var url = "";
+            if (urlMatch && urlMatch[1]) {
+                url = urlMatch[1];
+            } else {
+                // Nếu không có url hợp lệ, bỏ qua chunk này luôn, không lấy rác
+                continue;
+            }
+            
+            if (!url.startsWith("http")) {
+                url = BASEURL + url;
+            }
+            
+            // 2. Lấy Title
+            var title = "";
+            var rmatch = blockHtml.match(/title="([^"]+)"/i);
+            if (rmatch && rmatch[1]) {
+                title = rmatch[1];
+            }
+            
+            // 3. Lấy Poster (Toán tử 3 ngôi chuẩn)
+            var posterMatch = blockHtml.match(/data-src="([^"]+)"/i) || blockHtml.match(/src="([^"]+)"/i);
+            var poster = posterMatch ? posterMatch[1] : "";
+            if (poster && !poster.startsWith("http")) {
+                poster = BASEURL + poster;
+            }
+            
+            items.push({
+                id: url,
+                title: title,
+                posterUrl: poster
+            });
         }
         
         return JSON.stringify({
-            "items": items,
-            "pagination": { "currentPage": currentPage, "totalPages": totalPages }
+            items: items,
+            pagination: { currentPage: 1, totalPages: 999 }
         });
     } catch (e) {
-        return JSON.stringify({ "items": [], "pagination": { "currentPage": 1, "totalPages": 1 } });
+        console.error("Lỗi Parse:", e);
+        return JSON.stringify({ items: [], pagination: { currentPage: 1, totalPages: 1 } });
     }
 }
+
 
 function parseSearchResponse(html) {
     return parseListResponse(html);
@@ -223,92 +228,71 @@ function parseMovieDetail(html) {
     var cast = "????";
     var status = "????";
     var duration = "1:09:00 | 16 | 16";
-    var rating = "????";
-	var servers = [{}];
-  try {
+    var servers = [];
     
-    rmatch = html.match(/meta\s+property="og:image"\s+content="([^"]+)"/i);
-    if (rmatch && rmatch[1]) { limg = rmatch[1]; }
-
-    rmatch = html.match(/meta\s+property="og:title"\s+content="([^"]+)"/i);
-    if (rmatch && rmatch[1]) { lname = rmatch[1]; }
-
-    rmatch = html.match(/meta\s+property="og:description"\s+content="([^"]+)"/i);
-    if (rmatch && rmatch[1]) { ldes = rmatch[1]; }
-    
-    rmatch = html.match(/video-info-aux[\s\S]*?(\d+)[\s\S]*?<\/div>/i);
-    if (rmatch && rmatch[1]) { year = rmatch[1]; }
-    
-    rmatch = html.match(/video-info-actor[\s\S]*?title="([\s\S]*?)"/i);
-    if (rmatch && rmatch[1]) { direc = rmatch[1]; }
-    
-    rmatch = html.match(/Trạng thái[\s\S]*?video-info-item">([\s\S]*?)<\/div>/i);
-    if (rmatch && rmatch[1]) { status = rmatch[1].trim(); }
-    
-    rmatch = html.match(/Thời lượng[\s\S]*?video-info-item">([\s\S]*?)<\/div>/i);
-    if (rmatch && rmatch[1]) { duration = rmatch[1].trim(); }
-    
-    var split = duration.replace(/\s|\s+/gi,"").split("|");
-	  var stime = split[0];
-	  var firstEP = Number(split[1]);
-	  var lastEP = Number(split[1]);
-	  duration = "Độ Dài: " + stime + ", Tập: " + firstEP + "/" + lastEP;
-    
-
-// Bước 1: Tìm vùng HTML nằm trong class video-info-actor
-  const containerRegex = /Diễn viên[\s\S]*?class="[^"]*video-info-actor[^"]*"[\s\S]*?<\/div>/;
-  const containerMatch = html.match(containerRegex);
-
-if (containerMatch) {
-    const actorHtml = containerMatch[0]; // Chỉ lấy đoạn HTML bên trong div này
-    
-    // Bước 2: Tìm tất cả tên diễn viên trong đoạn HTML đã được giới hạn
-    const actorRegex = />([^<]+)<\/a>/g;
-    const matches = [...actorHtml.matchAll(actorRegex)];
-    
-    const actors = matches.map(match => match[1]);
-    cast = actors.join("").replace(/\n/gi,",").replace(/,,/gi,", ")
-    // Kết quả: [ 'Kiều Minh Tuấn', 'Mạc Văn Khoa', 'Mỹ Uyên', 'Ngọc Trinh', 'Trương Thế Vinh' ]
-} 
-
-	var rmatch = html.match(/video-info-footer display[\s\S]*?href="([\s\S]*?)"/i);
-    if (rmatch && rmatch[1]) { lurl = rmatch[1] }
-	
-	if(lurl.indexOf("full") > -1){
-		servers = [
-            {
-                name: "Server 1",
-                episodes: [
-                    { id: lurl, name: "Xem Ngay", slug: "" }
-                ]
+    try {
+        // 1. Parse Meta Tags
+        var rmatch;
+        rmatch = html.match(/meta\s+property="og:image"\s+content="([^"]+)"/i);
+        if (rmatch && rmatch[1]) { limg = rmatch[1]; }
+        
+        rmatch = html.match(/meta\s+property="og:title"\s+content="([^"]+)"/i);
+        if (rmatch && rmatch[1]) { lname = rmatch[1]; }
+        
+        rmatch = html.match(/meta\s+property="og:description"\s+content="([^"]+)"/i);
+        if (rmatch && rmatch[1]) { ldes = rmatch[1]; }
+        
+        var episodes = [];
+        
+        // 2. Kiểm tra xem có nút bấm server hay không bằng Regex MatchAll
+        // Tìm tất cả các đoạn có data-source="..." trong class button tương ứng
+        var serverRegex = /class="[^"]*video-player__cdn-selector-button[^"]*"[^>]*data-source="([^"]+)"/gi;
+        var serverMatches = [...html.matchAll(serverRegex)];
+        
+        if (serverMatches.length > 0) {
+            // Nếu tìm thấy các nút server
+            for (var j = 0; j < serverMatches.length; j++) {
+                var sourceUrl = serverMatches[j][1]; // Lấy giá trị trong nhóm ngoặc đơn ([^"]+)
+                
+                if (j === 0) { lurl = sourceUrl; } // Server đầu tiên làm ID chính
+                
+                episodes.push({
+                    id: sourceUrl,
+                    name: "Server " + (j + 1),
+                    slug: "tap-" + (j + 1)
+                });
             }
-        ];
-	}
-	else{
-		var surl = lurl.match(/([\s\S]*?\/tap-)(\d+)([\s\S]*)/);
-    var furl = surl[1];
-    var eurl = surl[3];
-    var episodes = [];
-    for(var j = 1;j < firstEP;j++){
-      var itemEp = {};
-      itemEp.id = furl + j + eurl;
-      itemEp.name = "Tập " + j;
-      itemEp.slug = "tap-" + j;
-      episodes.push(itemEp);
+        } else {
+            // 3. Nếu không có nút thì tìm iframe
+            var iframeRegex = /class="[^"]*video-player[^"]*"[\s\S]*?iframe\s+src="([^"]+)"/i;
+            var iframeMatch = html.match(iframeRegex);
+            
+            if (iframeMatch && iframeMatch[1]) {
+                lurl = iframeMatch[1];
+                episodes.push({
+                    id: iframeMatch[1],
+                    name: "Server 1",
+                    slug: "tap-1"
+                });
+            }
+        }
+        
+        servers = [{
+            name: "Server",
+            episodes: episodes
+        }];
+        
+    } catch (e) {
+        console.error("Lỗi parse dữ liệu: ", e);
     }
-    servers = [
-            {
-                name: "Server 1",
-                episodes: episodes
-            }
-    ];
-	}        
+    
+    // Trả về kết quả (Dù lỗi hay không lỗi vẫn return đúng cấu trúc object mong muốn)
     return JSON.stringify({
         id: lurl,
         title: lname,
         posterUrl: limg,
         backdropUrl: limg,
-        description: ldes + "\r\n\r\n" +lurl,
+        description: lurl ? ldes + "\r\n\r\n" + lurl : ldes,
         servers: servers,
         quality: "HD",
         year: year,
@@ -317,54 +301,68 @@ if (containerMatch) {
         casts: cast,
         director: direc
     });
-  }
-  catch (e) {
-        return JSON.stringify({
-        id: lurl,
-        title: lname,
-        posterUrl: limg,
-        backdropUrl: limg,
-        description: ldes,
-        servers: servers,
-        quality: "HD",
-        year: year,
-        status: status,
-        duration: duration,
-        casts: cast,
-        director: direc
-      });
-    }
-}
-//<link rel="preload" href="https://video3.cdnsolutions.media/key=kePlMtN+ADhubUR5+oDV3A,end=1782846000/data=2405:4802:918e:9690:213f:c9b0:ee12:58e-dvp/media=hls4/multi=256x144:144p:,426x240:240p:,854x480:480p:,1280x720:720p:,1920x1080:1080p:/029/485/972/_TPL_.av1.mp4.m3u8" as="fetch" crossorigin="true">
-function parseDetailResponse(html) {
-    try {
-        var streamUrl = "";
-        
-        var rmatch = html.match(/id="streaming-sv"[^>]*?data-link="(https?:[^"]*)"/i);
-   	    if (rmatch && rmatch[1]) { streamUrl = rmatch[1]; }
-		
-          return JSON.stringify({
-              url: streamUrl,
-              "headers": {
-                "Referer": BaseURL,
-                "Origin": BaseURL,
-                "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36",
-                // Đánh lừa thuật toán Client Hints của tường lửa
-                "Sec-Ch-Ua": '"Chromium";v="124", "Google Chrome";v="124", "Not-A.Brand";v="99"',
-                "Sec-Ch-Ua-Mobile": "?1",
-                "Sec-Ch-Ua-Platform": '"Android"',
-                
-                // Khai báo kiểu dữ liệu được chấp nhận giống như trình duyệt thật
-                "Accept": "*/*",
-                "Accept-Language": "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7",
-                "X-Requested-With": "com.android.chrome"
-            }
-          });
-          } catch (error) {
-              return JSON.stringify({ url: "", headers: {} });
-          }
 }
 
+
+// =================================================================
+// TẦNG 1: Xử lý trang xem phim gốc (link_xem_phim)
+// =================================================================
+function parseDetailResponse(html, url) {
+    try {
+        // LỚP 1: Tìm thẻ iframe trong trang xem phim
+        // Giả định HTML có dạng: <iframe src="https://gialap.com/embed/123"></iframe>
+        var iframeMatch = html.match(/window.videoData\s+=\s+{"id":"(\w+)/i);
+        
+        if (iframeMatch) {
+            //https://wogblex.com/videos/693d47c06b69a605f403d222/config
+            var host = "https://wogblex.com";
+            var link_json = host + "/videos/" + iframeMatch[1] + "/config";
+            
+            // 🛑 LỆNH NGỪNG TẦNG 1: 
+            // Trả link_iframe về cho App. Nhờ cấu hình "isEmbed: true", App sẽ biết 
+            // đây chưa phải là link video cuối và sẽ tự động fetch tiếp link_iframe này, 
+            // sau đó ném kết quả vào hàm parseEmbedResponse ở dưới.
+            return JSON.stringify({
+                url: link_json,
+                isEmbed: true,
+                headers: { "Referer": host,"Origin": host } // Gửi kèm referer nếu iframe chặn xem lén
+            });
+        }
+        
+        // LỚP DỰ PHÒNG: Nếu trang gốc không có iframe mà có sẵn m3u8 luôn
+        var m3u8Match = html.match(/(https?:\/\/[^"' ]+\.m3u8[^"' ]*)/i);
+        if (m3u8Match) {
+            return JSON.stringify({ url: m3u8Match[1], mimeType: "application/x-mpegURL", isEmbed: false });
+        }
+        return JSON.stringify({ url: url, isEmbed: true });
+    } catch (e) {
+        return JSON.stringify({ url: "", isEmbed: false });
+    }
+}
+
+
+// =================================================================
+// TẦNG 2 & TẦNG 3 (Dùng chung một hàm nhưng lặp lại)
+// =================================================================
+function parseEmbedResponse(html, sourceUrl) {
+    try {
+        //log("Đang quét mã nguồn tại URL: " + sourceUrl);
+        
+        // KỊCH BẢN A: Quét tìm xem CÓ iframe con nào bên trong nữa không (Tầng 3)
+        var object = JSON.parse(html);
+        
+        if (object) {
+            var linkfile = object.sources[0].file;
+            var type = object.sources[0].type;
+            return JSON.stringify({ url: linkfile, mimeType: type, isEmbed: false });
+        }
+        // Phòng hờ tầng cuối cùng không ra m3u8 mà ra link xem trực tiếp dạng khác
+        return JSON.stringify({ url: sourceUrl, isEmbed: false });
+        
+    } catch (e) {
+        return JSON.stringify({ url: sourceUrl, isEmbed: false });
+    }
+}
 
 // KHỚP MẪU ROPHIMFAKE: Trả về chuỗi text thuần túy thay vì gọi JSON.stringify
 function parseCategoriesResponse(html) { return "[]"}
