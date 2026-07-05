@@ -10,7 +10,7 @@ function getManifest() {
         "id": "testvideo",          
         "name": "Test Embed",
         "description": "Nguồn xem phim Online ổn định",
-        "version": "1.0",             
+        "version": "1.2",             
         "baseUrl": BaseURL,
         "iconUrl": "https://crimescenesolutions.co.za/wp-content/uploads/2026/04/phimhayok-io-fav.jpg", 
         "isEnabled": true,
@@ -138,13 +138,22 @@ function parseDetailResponse(html,url) {
         var videoUrl = BaseJSON.link || "";
         var refUrl = BaseJSON.ref || "";
         var agent = BaseJSON.codeb || "Mozilla/5.0 (Linux; Android 10; SM-G975F) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Mobile Safari/537.36";
-        html = JSON.stringify(html);
+        html = encodeHtmlToBase64(html);
         url = JSON.stringify(url);
         var customjs = BaseJSON.codec || "";
         customjs += `
         function runScript(){
-            customAlert('${url}', '${videoUrl}');
+            customAlert('${url}||${BaseURL}', '${html}');
         }
+        function decodeBase64ToHtml(base64String) {
+            const binaryString = atob(base64String);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return new TextDecoder().decode(bytes);
+        }
+        
         `
         return JSON.stringify({
             "url": videoUrl, 
@@ -170,7 +179,12 @@ function parseDetailResponse(html,url) {
         return JSON.stringify({ "url": "", "headers": {} });
     }
 }
-
+function encodeHtmlToBase64(htmlString) {
+    // Sử dụng TextEncoder để chuyển chuỗi thành mảng byte UTF-8, tránh lỗi font tiếng Việt
+    const bytes = new TextEncoder().encode(htmlString);
+    const binaryString = String.fromCharCode(...bytes);
+    return btoa(binaryString);
+}
 function parseCategoriesResponse(html) { return "[]"; }
 function parseCountriesResponse(html) { return "[]"; }
 function parseYearsResponse(html) { return "[]"; }
