@@ -8,7 +8,7 @@ function getManifest() {
         "id": "heovl",
         "name": "Heovl",
         "description": "XXX Hay",
-        "version": "1.8",
+        "version": "1.1",
         "BASEURL": BASEURL,
         "iconUrl": "https://static.cdnsolutions.media/xh-desktop/images/favicon/favicon-v2-256x256.ico",
         "isEnabled": true,
@@ -224,7 +224,7 @@ function parseListResponse(html) {
             pagination: { currentPage: 1, totalPages: 999 }
         });
     } catch (e) {
-        console.error("Lỗi Parse:", e);
+        //console.error("Lỗi Parse:", e);
         return JSON.stringify({ items: [], pagination: { currentPage: 1, totalPages: 1 } });
     }
 }
@@ -275,7 +275,7 @@ function parseMovieDetail(html,ourl) {
                 var sourcebutton = serverMatches[j]; // Lấy giá trị trong nhóm ngoặc đơn ([^"]+)
                 var sourceUrl = sourcebutton.match(/data-source=["']([\s\S]*?)["']/i);
                 if(sourceUrl && sourceUrl[1]){
-                    console.log(sourceUrl[1])
+                    //console.log(sourceUrl[1])
                     if (j === 0) { lurl = sourceUrl[1]; } // Server đầu tiên làm ID chính
                    
                     episodes.push({
@@ -308,7 +308,7 @@ function parseMovieDetail(html,ourl) {
         }];
         
     } catch (e) {
-        console.error("Lỗi parse dữ liệu: ", e);
+        //console.error("Lỗi parse dữ liệu: ", e);
     }
     var $return = {
         id: lurl,
