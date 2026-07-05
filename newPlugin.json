@@ -1,6 +1,13 @@
 {
     "version": 1,
     "plugins": [
+{
+            "id": "motherless",
+            "name": "Motherless",
+            "version": "1.0",
+            "scriptUrl": "https://raw.githubusercontent.com/markai30/VAXAPPSCRIPT/main/Plugins/motherless_plugin.js",
+            "iconUrl": "https://motherless.xxx/images/logo-header-3.svg"
+        },        
 
 {
             "id": "heovl",
