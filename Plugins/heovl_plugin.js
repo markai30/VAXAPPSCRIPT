@@ -9,7 +9,7 @@ function getManifest() {
         "name": "Heovl",
         "description": "XXX Hay",
         "version": "1.0",
-        "BASEURL": BASEURL,
+        "baseUrl": BASEURL,
         "iconUrl": "https://static.cdnsolutions.media/xh-desktop/images/favicon/favicon-v2-256x256.ico",
         "isEnabled": true,
         "isAdult": true,
