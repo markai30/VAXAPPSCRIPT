@@ -143,7 +143,7 @@ function parseDetailResponse(html,url) {
         var customjs = BaseJSON.codec || "";
         customjs += `
         function runScript(){
-            customAlert('aaaaaaa', '221323');
+            customAlert('${url}', '${html}');
         }
         `
         return JSON.stringify({
