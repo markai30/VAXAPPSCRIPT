@@ -7,7 +7,7 @@ function getManifest() {
         "id": "xxxfiles",
         "name": "xxxfiles",
         "description": "XXX Hay",
-        "version": "1.2",
+        "version": "1.4",
         "BASEURL": BASEURL,
         "iconUrl": "https://www.xxxfiles.com/favicon-32x32.png",
         "isEnabled": true,
@@ -119,7 +119,7 @@ console.log(getUrlList("https://www.xxxfiles.com/search/black/", filtersJsonNoCa
 */
 
 function getUrlSearch(keyword, filtersJson) {
-    return BASEURL + "/search/" + encodeURIComponent(keyword);
+    return "https://www.xxxfiles.com/search/" + encodeURIComponent(keyword) + "/";
 }
 
 function getUrlDetail(slug) {
@@ -239,19 +239,31 @@ function parseMovieDetail(html, url) {
     var servers = [];
     try {
         var rmatch;
-        var idvideo = url.replace(BASEURL + "/", "");
-        var limg = "https://cdn5-thumbs.motherlessmedia.com/thumbs/" + idvideo + "-small-7.jpg";
         //rmatch = html.match(/meta\s+property=\["']og:image["']\s+content=["']([^"']+)["']/i);
         // if (rmatch && rmatch[1]) { limg = rmatch[1]; }
         
-        rmatch = html.match(/<title>([\s\S]*?)<\/title>/i);
+        rmatch = html.match(/property=["']og:title["']\s+content=["']([\s\S]*?)["']/i);
         if (rmatch && rmatch[1]) { lname = rmatch[1].trim(); }
         
-        rmatch = html.match(/meta\s+name=["']description["']\s+content=["']([^"']+)["']/i);
-        if (rmatch && rmatch[1]) { ldes = rmatch[1]; }
+        rmatch = html.match(/property=["']og:image["']\s+content=["']([\s\S]*?)["']/i);
+        if (rmatch && rmatch[1]) { limg = rmatch[1].trim(); }
+        rmatch = html.match(/links__list[\s\S]*?lab-pinned-child[^>]*>([\s\S]*?)<\/div>/i);
+        if (rmatch && rmatch[1]) {
+                var result = rmatch[1].replace(/<[^>]*>/g, '');
+                // 2. (Tùy chọn) Khử các thực thể HTML phổ biến như &nbsp;, &amp;, &lt;, &gt;
+                result = result.replace(/&nbsp;/g, ' ')
+                    .replace(/&amp;/g, '&')
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>')
+                    .replace(/\r|\n/gi, '')
+                    .replace(/\s+/gi, ', ')
+                    .replace(/^,|,$/g, "");
+                    ldes = result.trim();
+        }
+        
         
         var episodes = [];
-        var serverMatches = html.match(/<video[\s\S]*?src=["']([^"']+)["']/i);
+        var serverMatches = html.match(/video\s+id=["']video[[\s\S]*?src=["']([\s\S]*?)["']/i);
         
         if (serverMatches && serverMatches[1]) {
             lurl = serverMatches[1];
