@@ -2,6 +2,14 @@
     "version": 1,
     "plugins": [
 {
+            "id": "sexdep",
+            "name": "Sexdep",
+            "version": "1.0",
+            "scriptUrl": "https://raw.githubusercontent.com/markai30/VAXAPPSCRIPT/main/Plugins/sexdep_plugin.js",
+            "iconUrl": "https://sexdep.vip/resize/50/2025/02/04/16c0e67dcf0acbc0be5e7ef611c410b76820a26b490a9d790f758fbe851607bc.png"
+        },   
+        
+{
             "id": "xxxfiles",
             "name": "XXXfiles",
             "version": "1.0",
