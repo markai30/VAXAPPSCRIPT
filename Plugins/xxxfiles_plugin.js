@@ -7,7 +7,7 @@ function getManifest() {
         "id": "xxxfiles",
         "name": "xxxfiles",
         "description": "XXX Hay",
-        "version": "1.0",
+        "version": "1.1",
         "BASEURL": BASEURL,
         "iconUrl": "https://www.xxxfiles.com/favicon-32x32.png",
         "isEnabled": true,
@@ -108,7 +108,7 @@ function getUrlYears() { return ""; }
 function parseListResponse(html,url) {
     try {
         var items = [];
-        var error = {id: url,title: "Lỗi: " + url,: BASEIMG};
+        var error = {id: url,title: "Lỗi: " + url,posterUrl: BASEIMG};
         // Kiểm tra nếu HTML trả về là trang lỗi hoặc trang trống
         if (!html || html.indexOf('body') === -1) {
             
