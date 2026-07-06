@@ -2,6 +2,14 @@
     "version": 1,
     "plugins": [
 {
+            "id": "xxxfiles",
+            "name": "XXXfiles",
+            "version": "1.0",
+            "scriptUrl": "https://raw.githubusercontent.com/markai30/VAXAPPSCRIPT/main/Plugins/xxxfiles_plugin.js",
+            "iconUrl": "https://www.xxxfiles.com/img/logo.png?v=3"
+        },   
+        
+{
             "id": "motherless",
             "name": "Motherless",
             "version": "1.0",
