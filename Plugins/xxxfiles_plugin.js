@@ -7,7 +7,7 @@ function getManifest() {
         "id": "xxxfiles",
         "name": "xxxfiles",
         "description": "XXX Hay",
-        "version": "1.2",
+        "version": "1.5",
         "BASEURL": BASEURL,
         "iconUrl": "https://www.xxxfiles.com/favicon-32x32.png",
         "isEnabled": true,
@@ -105,61 +105,82 @@ function getUrlYears() { return ""; }
 
 
 
-function parseListResponse(html, url) {
+function parseListResponse(html, currentUrl) {
     try {
         var items = [];
-        // Kiểm tra nếu HTML trả về là trang lỗi hoặc trang trống
+        
+        // 1. Kiểm tra nếu HTML trống hoặc lỗi
         if (!html || html.indexOf('body') === -1) {
-            return JSON.stringify({ items: [{ id: url, title: "Lỗi: 1" + url, posterUrl: BASEIMG }], pagination: { currentPage: 1, totalPages: 1 } });
+            return JSON.stringify({
+                items: [{ id: currentUrl, title: "Lỗi: 1 - " + currentUrl, posterUrl: BASEIMG }],
+                pagination: { currentPage: 1, totalPages: 1 }
+            });
         }
-        const divRegex = /class=["']thumb\s+item["']>([\s\S]*?)<\/div>/g;
+        
+        // 2. Regex linh hoạt hơn cho class (chấp nhận thumb item hoặc item thumb, và các class đi kèm)
+        const divRegex = /<div[^>]*class=["'][^"']*(?:thumb\s+item|item\s+thumb)[^"']*["'][^>]*>([\s\S]*?)<\/div>/g;
         let match;
+        
         while ((match = divRegex.exec(html)) !== null) {
             const content = match[1];
-            if (!content.match(/img|href|video|src/i)) {
-                // nếu trong khối không có link và ảnh thì bỏ qua
-                continue;
-            }
-            var urlMatch = content.match(/a[\s\S]*?href=["']([^"]+)["']/i);
             
-            var url = "";
-            if (urlMatch && urlMatch[1]) {
-                url = urlMatch[1];
-            } else {
+            // Nếu trong khối không chứa các từ khóa quan trọng thì bỏ qua
+            if (!content.match(/img|href|video|src/i)) {
                 continue;
             }
-            if (!url.startsWith("http")) {
-                url = BASEURL + url;
+            
+            // 3. Lấy href từ thẻ <a> đầu tiên trong khối
+            var urlMatch = content.match(/<a[^>]+href=["']([^"']+)["']/i);
+            var itemUrl = "";
+            if (urlMatch && urlMatch[1]) {
+                itemUrl = urlMatch[1];
+            } else {
+                continue; // Không có link thì bỏ qua item này
             }
+            
+            if (!itemUrl.startsWith("http")) {
+                itemUrl = BASEURL + (itemUrl.startsWith("/") ? "" : "/") + itemUrl;
+            }
+            
+            // 4. Lấy Title từ thuộc tính alt của ảnh
             var title = "";
-            var rmatch = content.match(/alt="([^"]+)"/i);
+            var rmatch = content.match(/alt=["']([^"']+)["']/i);
             if (rmatch && rmatch[1]) {
                 title = rmatch[1];
             }
-            // 3. Lấy Poster (Toán tử 3 ngôi chuẩn)
-            var posterMatch = content.match(/data-src="([^"]+)"/i) || content.match(/src="([^"]+)"/i);
             
+            // 5. Lấy Poster (Ưu tiên data-src rồi mới đến src)
+            var posterMatch = content.match(/data-src=["']([^"']+)["']/i) || content.match(/src=["']([^"']+)["']/i);
             var poster = posterMatch ? posterMatch[1] : BASEIMG;
+            
             if (poster && !poster.startsWith("http")) {
-                poster = BASEURL + poster;
+                poster = BASEURL + (poster.startsWith("/") ? "" : "/") + poster;
             }
             
-            
             items.push({
-                id: url,
+                id: itemUrl,
                 title: title,
                 posterUrl: poster
             });
         }
+        
         return JSON.stringify({
             items: items,
             pagination: { currentPage: 1, totalPages: 999 }
         });
         
     } catch (e) {
-        return JSON.stringify({ items: [{ id: url, title: "Lỗi: 2: " + url, posterUrl: BASEIMG }], pagination: { currentPage: 1, totalPages: 1 } });
+        return JSON.stringify({
+            items: [{ id: currentUrl, title: "Lỗi: 2 - " + e.message, posterUrl: BASEIMG }],
+            pagination: { currentPage: 1, totalPages: 1 }
+        });
     }
 }
+
+// --- Cách chạy thực tế trên Console trình duyệt ---
+//var htmlData = document.documentElement.outerHTML; // Lấy toàn bộ HTML chuẩn hơn
+//var resultJson = parseListResponse(htmlData, window.location.href);
+//JSON.parse(resultJson);
 //BASEURL = "https://www.xxxfiles.com";
 //var html = document.getElementsByTagName("html")[0].outerHTML;
 //JSON.parse(parseListResponse(html));
