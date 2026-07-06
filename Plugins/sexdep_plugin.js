@@ -1,6 +1,6 @@
 
-BASEURL = "https://sexdep.vip";
-BASEIMG = "https://sexdep.vip/resize/50/2025/02/04/16c0e67dcf0acbc0be5e7ef611c410b76820a26b490a9d790f758fbe851607bc.png";
+BASEURL = "https://sexdeplon.com";
+BASEIMG = "https://sexdeplon.com/resize/50/2025/02/04/16c0e67dcf0acbc0be5e7ef611c410b76820a26b490a9d790f758fbe851607bc.png";
 
 // https://sexdep.vip/?page=2
 // https://www.xxxfiles.com/favicon-32x32.png
@@ -9,7 +9,7 @@ function getManifest() {
         "id": "sexdep",
         "name": "sexdep",
         "description": "XXX Hay",
-        "version": "1.0",
+        "version": "1.2",
         "BASEURL": BASEURL,
         "iconUrl": BASEIMG,
         "isEnabled": true,
