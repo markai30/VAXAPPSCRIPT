@@ -9,7 +9,7 @@ function getManifest() {
         "id": "sexdep",
         "name": "sexdep",
         "description": "XXX Hay",
-        "version": "1.2",
+        "version": "1.3",
         "BASEURL": BASEURL,
         "iconUrl": BASEIMG,
         "isEnabled": true,
@@ -316,44 +316,12 @@ function parseMovieDetail(html, url) {
 
 function parseDetailResponse(html, url) {
     try {
-        var customJs = `
-function initCustomVideoFix() {
-    const style = document.createElement('style');
-    var customcss = 'body { background: black; overflow: hidden; }#comments,header,footer,.entry-actions,.entry-header,.entry-info,.entry-content,#related-posts,.entry-content + .mt-2 {display:none}body * {background: black;}';
-    style.innerHTML = customcss;
-    document.head.appendChild(style);
-    
-    if (typeof jwplayer === "function") {
-        const player = jwplayer("previewPlayer");
-        if (player && typeof player.getMute === "function") {
-            if (player.getMute()) {
-                player.setMute(false);
-            }
-            player.setVolume(100);
-        }
-    }
-    
-    const checkAndClick = setInterval(() => {
-        const skipButton = document.getElementById("skip-ad");
-        if (skipButton) {
-            skipButton.click();
-            clearInterval(checkAndClick);
-        }
-    }, 200);
-    
-    setTimeout(() => { clearInterval(checkAndClick); }, 20000);
-}
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initCustomVideoFix);
-} else {
-    initCustomVideoFix();
-}`;
-        
+        var customJs = CustomjQ(html, url);
         return JSON.stringify({
             url: "",
             headers: {
-                "Referer": url,
-                "Origin": url,
+                "Referer": BASEURL,
+                "Origin": BASEURL,
                 "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
                 "Custom-Js": customJs.trim()
             }
@@ -416,6 +384,113 @@ function buildMenu(listurl) {
         menulist.push(item);
     }
     return menulist;
+}
+
+function CustomjQ(html, url){
+    var $cutom1 = `
+    function runBegin(){
+        customAlert("${url}", "Alo alo");
+    }
+    `;
+    var $custom2 =  `
+    function customAlert(title, message) {
+        const overlay = document.createElement('div');
+        Object.assign(overlay.style, {
+            position: 'fixed', top: '0', left: '0', width: '100vw', height: '100vh',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)', display: 'flex', justifyContent: 'center',
+            alignItems: 'center', zIndex: '99999', opacity: '0', transition: 'opacity 0.2s ease'
+        });
+        
+        const box = document.createElement('div');
+        Object.assign(box.style, {
+            backgroundColor: '#ffffff', padding: '24px', borderRadius: '12px',
+            boxShadow: '0 10px 30px rgba(0,0,0,0.25)', maxWidth: '380px', width: '85%',
+            boxSizing: 'border-box', fontFamily: '"Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+            transform: 'scale(0.8)', transition: 'transform 0.2s ease'
+        });
+        
+        const titleEl = document.createElement('input');
+        titleEl.type = 'text'; 
+        titleEl.value = title;
+        Object.assign(titleEl.style, {
+            display: 'block', width: '100%', boxSizing: 'border-box',
+            margin: '0 0 12px 0', padding: '6px 10px', color: '#222222',
+            fontSize: '15px', fontWeight: '600', border: '1px solid #ddd', borderRadius: '6px'
+        });
+        
+        const msgEl = document.createElement('textarea');
+        msgEl.value = message;
+        Object.assign(msgEl.style, {
+            display: 'block', width: '100%', boxSizing: 'border-box',
+            margin: '0 0 20px 0', padding: '8px 10px', color: '#555555',
+            fontSize: '14px', height: '200px', lineHeight: '1.5',
+            border: '1px solid #ddd', borderRadius: '6px', resize: 'none'
+        });
+        
+        const btn = document.createElement('button');
+        btn.innerText = 'OK';
+        Object.assign(btn.style, {
+            display: 'block', margin: '0 auto', padding: '10px 28px',
+            fontSize: '15px', fontWeight: '600', color: '#ffffff',
+            backgroundColor: '#007bff', border: 'none', borderRadius: '6px',
+            cursor: 'pointer', outline: 'none', transition: 'background-color 0.1s'
+        });
+        
+        btn.onmouseover = () => btn.style.backgroundColor = '#0056b3';
+        btn.onmouseout = () => btn.style.backgroundColor = '#007bff';
+        
+        const closeAlert = () => {
+            overlay.style.opacity = '0';
+            box.style.transform = 'scale(0.8)';
+            setTimeout(() => { overlay.remove(); }, 200);
+        };
+        
+        btn.onclick = closeAlert;
+        overlay.onclick = (e) => { if (e.target === overlay) closeAlert(); };
+        
+        box.appendChild(titleEl);
+        box.appendChild(msgEl);
+        box.appendChild(btn);
+        overlay.appendChild(box);
+        document.body.appendChild(overlay);
+        
+        setTimeout(() => { overlay.style.opacity = '1'; box.style.transform = 'scale(1)'; }, 10);
+    }
+
+    function initCustomVideoFix() {
+        const style = document.createElement('style');
+        var customcss = 'body { background: black; overflow: hidden; }#comments,header,footer,.entry-actions,.entry-header,.entry-info,.entry-content,#related-posts,.entry-content + .mt-2 {display:none}body * {background: black;}';
+        style.innerHTML = customcss;
+        document.head.appendChild(style);
+        
+        if (typeof jwplayer === "function") {
+            const player = jwplayer("previewPlayer");
+            if (player && typeof player.getMute === "function") {
+                if (player.getMute()) {
+                    player.setMute(false);
+                }
+                player.setVolume(100);
+            }
+        }
+        
+        const checkAndClick = setInterval(() => {
+            const skipButton = document.getElementById("skip-ad");
+            if (skipButton) {
+                skipButton.click();
+                clearInterval(checkAndClick);
+            }
+        }, 200);
+        
+        setTimeout(() => { clearInterval(checkAndClick); }, 20000);
+        runBegin();
+    }
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initCustomVideoFix);
+    } else {
+        initCustomVideoFix();
+    }
+`
+return $cutom1 + $cutom2;
 }
 
 
