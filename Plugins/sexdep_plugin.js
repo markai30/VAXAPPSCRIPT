@@ -9,7 +9,7 @@ function getManifest() {
         "id": "sexdep",
         "name": "sexdep",
         "description": "XXX Hay",
-        "version": "1.3",
+        "version": "1.0",
         "BASEURL": BASEURL,
         "iconUrl": BASEIMG,
         "isEnabled": true,
@@ -389,7 +389,7 @@ function buildMenu(listurl) {
 function CustomjQ(html, url){
     var $cutom1 = `
     function runBegin(){
-        customAlert("${url}", "Alo alo");
+        customAlert("2412421", "Alo alo");
     }
     `;
     var $custom2 =  `
@@ -459,7 +459,7 @@ function CustomjQ(html, url){
 
     function initCustomVideoFix() {
         const style = document.createElement('style');
-        var customcss = 'body { background: black; overflow: hidden; }#comments,header,footer,.entry-actions,.entry-header,.entry-info,.entry-content,#related-posts,.entry-content + .mt-2 {display:none}body * {background: black;}';
+        var customcss = 'body {overflow: hidden; }#comments,header,footer,.entry-actions,.entry-header,.entry-info,.entry-content,#related-posts,.entry-content + .mt-2 {display:none}body * {background: black;}';
         style.innerHTML = customcss;
         document.head.appendChild(style);
         
