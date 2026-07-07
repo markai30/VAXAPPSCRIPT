@@ -9,7 +9,7 @@ function getManifest() {
         "id": "sexdep",
         "name": "sexdep",
         "description": "XXX Hay",
-        "version": "1.3",
+        "version": "1.1",
         "BASEURL": BASEURL,
         "iconUrl": BASEIMG,
         "isEnabled": true,
@@ -23,7 +23,7 @@ function getManifest() {
 
 // https://sexdeplon.com/?view=hay-nhat&page=2
 function getHomeSections() {
-    var listurl = "?view=hay-nhat@@Hàng Mới@@true";
+    var listurl = "the-loai/viet-nam@@Hàng Mới@@true";
     var menulist = buildMenu(listurl);
     return JSON.stringify(menulist);
 }
@@ -372,7 +372,6 @@ function parseYearsResponse(html) { return "[]"; }
 
 function getLISTmenu() {
     return `
-?view=hay-nhat@@Hay Nhất
 the-loai/vietsub@@Vietsub
 the-loai/khong-che@@Không Che
 the-loai/viet-nam@@Việt Nam
