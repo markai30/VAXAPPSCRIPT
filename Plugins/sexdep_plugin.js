@@ -9,7 +9,7 @@ function getManifest() {
         "id": "sexdep",
         "name": "sexdep",
         "description": "XXX Hay",
-        "version": "1.1",
+        "version": "1.2",
         "BASEURL": BASEURL,
         "iconUrl": BASEIMG,
         "isEnabled": true,
@@ -244,44 +244,43 @@ function parseMovieDetail(html, url) {
     var direc = "????";
     var cast = "????";
     var status = "????";
-    var duration = "1:09:00 | 16 | 16";
+    var duration = "";
     var servers = [];
+    var categories = "";
+    
     try {
         var rmatch;
-        //rmatch = html.match(/meta\s+property=\["']og:image["']\s+content=["']([^"']+)["']/i);
-        // if (rmatch && rmatch[1]) { limg = rmatch[1]; }
-        
-        rmatch = html.match(/property=["']og:title["']\s+content=["']([\s\S]*?)["']/i);
+        // Lấy title name /property=["']og:title["']\s+content=["']([^"']+)["']/i
+        rmatch = html.match(/property=["']og:title["']\s+content=["']([^"']+)["']/i);
         if (rmatch && rmatch[1]) { lname = rmatch[1].trim(); }
         
-        rmatch = html.match(/video\s+id=["']video[[\s\S]*?poster=["']([\s\S]*?)["']/i);
+        // Lấy ảnh /property=["']og:image["']\s+content=["']([^"']+)["']/i
+        rmatch = html.match(/property=["']og:image["']\s+content=["']([^"']+)["']/i);
         if (rmatch && rmatch[1]) { limg = rmatch[1].trim(); }
-        rmatch = html.match(/class=["']links__list["'][^>]*>([\s\S]*?)<\/div>/i);
-        if (rmatch && rmatch[1]) {
-                var result = rmatch[1].replace(/<[^>]*>/g, '');
-                // 2. (Tùy chọn) Khử các thực thể HTML phổ biến như &nbsp;, &amp;, &lt;, &gt;
-                result = result.replace(/&nbsp;/g, ' ')
-                    .replace(/&amp;/g, '&')
-                    .replace(/&lt;/g, '<')
-                    .replace(/&gt;/g, '>')
-                    .replace(/\r|\n/gi, '')
-                    .replace(/\s+/gi, ', ')
-                    .replace(/^,|,$/g, "");
-                    ldes = result.trim();
-        }
         
+        // Lấy description /property=["']og:description["']\s+content=["']([^"']+)["']/i
+        rmatch = html.match(/property=["']og:description["']\s+content=["']([^"']+)["']/i);
+        if (rmatch && rmatch[1]) {var ldes = rmatch[1];}
         
+        // Lấy thể loại /(<div[^>]+class=["']categories[\s\S]*?<\/div>)/i
+        rmatch = html.match(/(<div[^>]+class=["']categories[\s\S]*?<\/div>)/i);
+        if (rmatch && rmatch[1]) {categories = trimHTML(rmatch[1])}          
+        // Bốc tách server
+        var regex = /data-source=["']([^"']+)/g;
+        var matches = [...html.matchAll(regex)];
         var episodes = [];
-        var serverMatches = html.match(/video\s+id=["']video[[\s\S]*?src=["']([\s\S]*?)["']/i);
+
+        matches.forEach((match, index) => {
+          var link = match[1];
+          var stt = index + 1; // Số thứ tự bắt đầu từ 1, 2, 3...
+          episodes.push({
+             id: link,
+             name: "Server " + stt,
+             slug: "tap-" + stt
+          });
+          //console.log("Đang duyệt link số: " + stt + " -> " + link);
+        });
         
-        if (serverMatches && serverMatches[1]) {
-            lurl = serverMatches[1];
-            episodes.push({
-                id: serverMatches[1],
-                name: "Xem Ngay",
-                slug: "tap-1"
-            });
-        }
         servers = [{
             name: "Server",
             episodes: episodes
@@ -303,9 +302,12 @@ function parseMovieDetail(html, url) {
         status: status,
         duration: duration,
         casts: cast,
-        director: direc
+        director: direc,
+        category: categories
     });
 }
+
+
 //BASEURL = "https://motherless.xxx";
 //var html = document.getElementsByTagName("html")[0].outerHTML;
 //JSON.parse(parseMovieDetail(html));
@@ -414,4 +416,17 @@ function buildMenu(listurl) {
         menulist.push(item);
     }
     return menulist;
+}
+
+
+function trimHTML(inhtml) {
+    var result = inhtml.replace(/<[^>]*>/g, '');
+    result = result.replace(/&nbsp;/g, ' ')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/\n|\r/gi, ' - ')
+        .replace(/\s+/gi, ' ')
+        .replace(/^,+|,+$/g, "");
+    return result;
 }
